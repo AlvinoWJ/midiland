@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import Image from "next/image";
 // Import komponen lain yang mungkin Anda buat (misal: Card, Accordion dari shadcn/ui)
 // import { Card, CardHeader, CardContent } from "@/components/ui/card";
 // import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,50 +12,78 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center bg-gray-50">
       {" "}
-      {/* Ganti background sesuai desain */}
-      {/* Header Section */}
-      <nav className="w-full flex justify-center border-b h-16 bg-white shadow-sm sticky top-0 z-50">
-        <div className="w-full max-w-6xl flex justify-between items-center p-3 px-5">
-          {/* Logo MidiLand */}
-          <div className="text-red-600 font-bold text-xl">
-            {/* Ganti dengan komponen Logo atau Image */}
-            MidiLand
-          </div>
+      {/* navbar */}
+      <nav className="w-full flex justify-center h-16 bg-white shadow-sm sticky top-0 z-50">
+        <div className="w-full max-w-6xl flex justify-between items-center px-4 md:px-6">
+          <Link href="/" className="font-bold text-2xl">
+            <span className="text-secondary">Midi</span>
+            <span className="text-primary">Land</span>
+          </Link>
 
-          {/* Tombol Login & Jadikan Mitra */}
-          <div className="flex gap-2">
-            {/* Ganti atau sesuaikan AuthButton. Atau gunakan Button biasa */}
-            <Button variant="outline" size="sm">
-              Login
+          {/* Tombol Login & Register */}
+          <div className="flex items-center gap-3">
+            {/* Tombol Login - Outline Red */}
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className=" border-primary text-primary font-semibold rounded-full px-6"
+            >
+              <Link href="/auth/login">Login</Link>
             </Button>
-            <Button size="sm">Jadikan Mitra</Button>
-            {/* <AuthButton /> {/* Mungkin perlu adaptasi teks & style */}
+
+            {/* Tombol Register - Solid Black */}
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="border-black text-black font-semibold hover:bg-gray-800 rounded-full px-6"
+            >
+              <Link href="/auth/sign-up">Register</Link>
+            </Button>
           </div>
         </div>
       </nav>
       {/* Container Utama untuk Konten Halaman */}
       <div className="flex-1 w-full flex flex-col items-center max-w-6xl mx-auto px-4">
-        {/* Hero Section */}
-        <section className="w-full flex flex-col md:flex-row items-center justify-between gap-8 py-16 md:py-24">
-          <div className="md:w-1/2 space-y-4 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-              Punya property strategis?
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600">
-              Jadikan peluang bisnis bersama{" "}
-              <strong className="text-red-600">Alfamidi!</strong>
-            </p>
-            <Button size="lg" className="mt-6 bg-red-600 hover:bg-red-700">
-              {" "}
-              {/* Sesuaikan warna */}
-              Ajukan Property Sekarang
-            </Button>
+        <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden">
+          {/* Background Peta PNG */}
+          <div className="absolute inset-0 z-0 opacity-10">
+            <Image
+              src="/indonesia.png" // Contoh path
+              alt="Peta Indonesia Latar Belakang"
+              layout="fill" // Mengisi div parent
+              objectFit="cover" // Atau 'contain' jika ingin seluruh peta terlihat
+              quality={75} // Sesuaikan kualitas gambar jika perlu
+            />
           </div>
-          <div className="md:w-1/2 mt-8 md:mt-0 flex justify-center">
-            {/* Placeholder untuk Ilustrasi Toko Alfamidi */}
-            {/* Ganti dengan komponen Image */}
-            <div className="w-full max-w-md h-64 bg-gray-200 rounded flex items-center justify-center">
-              [Ilustrasi Toko Alfamidi]
+          {/* Konten Hero (Teks, Tombol, Ilustrasi Toko) */}
+          <div className="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-8 py-16 md:py-24 ">
+            <div className="md:w-1/2 space-y-4 text-center md:text-left">
+              <h1 className="text-3xl md:text-4xl font-bold text-midiland-text">
+                Punya property strategis?
+              </h1>
+              <p className="text-lg md:text-xl text-midiland-text/80">
+                Jadikan peluang bisnis bersama
+                <strong className="text-midiland-primary">Alfamidi!</strong>
+              </p>
+              <Button
+                size="lg"
+                variant="outline"
+                className="mt-6 border-midiland-primary text-midiland-primary font-semibold rounded-full px-6 hover:bg-midiland-primary hover:text-white" // Sesuaikan kelas
+              >
+                Ajukan Property Anda Sekarang
+              </Button>
+            </div>
+            <div className="md:w-1/2 mt-8 md:mt-0 flex justify-center">
+              <Image
+                src="/alfamidi.png"
+                alt="Alfamidi Ilustration"
+                width={450}
+                height={423}
+                priority
+                className="max-w-md w-full h-auto" // Buat responsif
+              />
             </div>
           </div>
         </section>
