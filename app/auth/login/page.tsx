@@ -1,17 +1,36 @@
-// alvinowj/midiland/midiland-front_end/app/auth/login/page.tsx
-"use client"; // Diperlukan karena kita menggunakan state dan event handling
+"use client";
 
 import Link from "next/link";
-import Image from "next/image"; // Untuk logo dan ilustrasi
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Impor ikon Google jika Anda punya (misalnya dari lucide-react atau SVG)
-// import { GoogleIcon } from '@/components/icons/google';
+const carouselSlides = [
+  {
+    image: "/carousel1.svg",
+    alt: "Ilustrasi Proses Pengajuan",
+    title: "Proses Pengajuan Mudah dan Terpadu",
+  },
+  {
+    image: "/carousel2.svg",
+    alt: "Ilustrasi Profesional",
+    title: "Survei dan Verifikasi Profesional",
+  },
+  {
+    image: "/carousel3.svg",
+    alt: "Ilustrasi Kerja Sama",
+    title: "Kerja Sama Aman dan Transparan",
+  },
+  {
+    image: "/carousel4.svg",
+    alt: "Ilustrasi Perkembangan",
+    title: "Nilai Aset Semakin Berkembang",
+  },
+];
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,22 +38,34 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === carouselSlides.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [currentSlide]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
     setError(null);
-
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       if (error) throw error;
-      // Arahkan ke halaman setelah login berhasil (misal: dashboard)
-      router.push("/"); // Ganti "/protected" dengan rute yang sesuai
-      router.refresh(); // Refresh halaman untuk memastikan state auth terupdate
+      router.push("/");
+      router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -42,56 +73,42 @@ export default function LoginPage() {
     }
   };
 
-  // Handler untuk Google Sign In (implementasi nanti)
   const handleGoogleSignIn = async () => {
-    const supabase = createClient();
-    // setIsLoading(true); // Opsional
-    // setError(null); // Opsional
-    // try {
-    //   const { error } = await supabase.auth.signInWithOAuth({
-    //     provider: 'google',
-    //     options: {
-    //       redirectTo: `${window.location.origin}/auth/callback`, // Sesuaikan jika perlu
-    //     },
-    //   });
-    //   if (error) throw error;
-    // } catch (error: unknown) {
-    //   setError(error instanceof Error ? error.message : "Google Sign-In failed");
-    //   // setIsLoading(false); // Opsional
-    // }
     alert("Google Sign-In belum diimplementasikan");
   };
 
   return (
-    <div className="flex min-h-screen w-full">
-      {/* Kolom Kiri: Form Login (Terlihat di semua ukuran layar) */}
-      <div className="flex flex-1 flex-col justify-center items-center p-6 md:p-10 lg:p-16 bg-white">
-        <div className="w-full max-w-sm space-y-6">
-          {/* Logo Alfamidi */}
-          <div className="flex justify-center mb-4">
-            {/* Ganti dengan Image component */}
-            <div className="h-10 w-32 bg-gray-200 flex items-center justify-center text-sm">
-              [Logo Alfamidi]
-            </div>
-          </div>
-          {/* Ilustrasi Toko Kecil (opsional, bisa ada atau tidak sesuai preferensi) */}
-          <div className="flex justify-center mb-6">
-            {/* Ganti dengan Image component */}
-            <div className="h-32 w-48 bg-gray-200 flex items-center justify-center text-sm">
-              [Ilustrasi Toko]
-            </div>
-          </div>
-
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Masuk ke MidiLand
+    <div className="flex h-screen w-full overflow-hidden">
+      {/* Kolom Kiri: Form Login */}
+      <div className="relative flex w-full md:w-1/2 flex-col justify-center items-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
+        <div className="w-full max-w-lg space-y-4">
+          <div className="flex justify-center text-left mb-3">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Masuk ke <span className="text-secondary">Midi</span>
+              <span className="text-primary">Land</span>
             </h1>
-            {/* Tambahkan deskripsi jika ada */}
+          </div>
+          {/* Gambar tambahan di atas teks “Masuk ke MidiLand” */}
+          <div className="flex justify-center mb-3">
+            <Image
+              src="/alfamidi.svg" // ganti nama file kamu jadi ini di folder public
+              alt="Header Gambar"
+              width={350}
+              height={250}
+              className="object-contain"
+              priority
+            />
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+          {/* Form */}
+          <form onSubmit={handleLogin} className="space-y-3">
+            <div className="space-y-1">
+              <Label
+                htmlFor="email"
+                className="text-gray-900 font-medium text-sm"
+              >
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -99,17 +116,23 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="text-base md:text-sm" // Pastikan styling konsisten
+                className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm"
               />
             </div>
-            <div className="grid gap-2">
+
+            <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/auth/forgot-password" // Arahkan ke halaman lupa password
-                  className="ml-auto inline-block text-sm text-blue-600 hover:underline" // Sesuaikan warna
+                <Label
+                  htmlFor="password"
+                  className="text-gray-900 font-medium text-sm"
                 >
-                  Forgot Password?
+                  Password
+                </Label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-xs text-primary hover:underline font-medium"
+                >
+                  Lupa Kata Sandi?
                 </Link>
               </div>
               <Input
@@ -118,50 +141,54 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="text-base md:text-sm" // Pastikan styling konsisten
+                className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm"
               />
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
+
+            {error && (
+              <p className="text-xs text-primary bg-red-50 p-2 rounded-lg">
+                {error}
+              </p>
+            )}
+
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-md"
               disabled={isLoading}
             >
-              {" "}
-              {/* Sesuaikan warna */}
               {isLoading ? "Memproses..." : "Masuk"}
             </Button>
           </form>
 
-          {/* Separator "Atau" */}
-          <div className="relative my-4">
+          {/* Separator */}
+          <div className="relative my-3">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-gray-300" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">Atau</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-3 text-gray-500 font-medium">
+                Atau
+              </span>
             </div>
           </div>
 
-          {/* Tombol Google Sign In */}
+          {/* Google Sign In */}
           <Button
             variant="outline"
-            className="w-full flex items-center justify-center gap-2 border-gray-300"
+            className="w-full h-10 flex items-center justify-center gap-2 border-gray-300 hover:border-none rounded-lg font-medium text-sm"
             onClick={handleGoogleSignIn}
-            disabled={isLoading} // Optional: disable while main login is processing
+            disabled={isLoading}
           >
-            {/* <GoogleIcon className="h-4 w-4" /> */}
-            <span className="h-4 w-4 bg-gray-200 text-xs">[G]</span>{" "}
-            {/* Placeholder Ikon Google */}
+            <Image src="/google.svg" alt="Google" width={16} height={16} />
             Masuk dengan Google
           </Button>
 
-          {/* Link Sign Up */}
-          <div className="mt-4 text-center text-sm text-gray-600">
+          {/* Sign Up Link */}
+          <div className="text-center text-xs text-gray-700 pt-1">
             Belum punya akun?{" "}
             <Link
-              href="/auth/sign-up" // Arahkan ke halaman sign up
-              className="font-medium text-blue-600 hover:underline" // Sesuaikan warna
+              href="/auth/sign-up"
+              className="font-semibold text-primary hover:underline "
             >
               Buat akun disini.
             </Link>
@@ -169,36 +196,72 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Kolom Kanan: Ilustrasi (Hanya terlihat di layar medium ke atas) */}
-      <div className="hidden md:flex md:w-1/2 lg:w-3/5 bg-gray-100 items-center justify-center p-10 relative">
-        {/* Anda bisa menggunakan background image atau komponen Image */}
-        {/* Contoh dengan background color placeholder */}
-        <div className="absolute inset-0 bg-blue-200 flex items-center justify-center">
-          {/* Placeholder untuk ilustrasi besar */}
-          <div className="w-3/4 h-3/4 bg-gray-300 rounded-lg flex flex-col items-center justify-center text-center p-8 space-y-4 shadow-lg backdrop-blur-sm bg-white/30">
-            {/* Placeholder ilustrasi 'Proposal' */}
-            <div className="w-48 h-32 bg-blue-300 mb-4">
-              [Ilustrasi Proposal]
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-700">
-              Proses Pengajuan Mudah dan Terpadu
-            </h2>
+      {/* Kolom Kanan: Carousel */}
+      <div className="hidden md:flex md:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/login.svg"
+            alt="City Background"
+            fill
+            className="object-cover"
+            quality={100}
+            priority
+          />
+        </div>
+        {/* Logo Alfamidi di pojok kanan atas */}
+        <div className="absolute top-6 right-6">
+          <div className="border-2 border-white rounded-xl p-2 bg-white shadow-md">
+            <Image
+              src="/alfamidilogo.svg"
+              alt="Alfamidi Logo"
+              width={150}
+              height={40}
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
-        {/* Jika menggunakan komponen Image:
-         <Image
-           src="/path/ke/ilustrasi-kanan.jpg" // Ganti dengan path gambar Anda di folder public
-           alt="Ilustrasi Proses Pengajuan Midiland"
-           layout="fill" // Mengisi div container
-           objectFit="cover" // Sesuaikan objectFit (cover, contain, etc.)
-           className="z-0"
-         />
-         <div className="relative z-10 text-center bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-lg">
-             {/* Placeholder ilustrasi 'Proposal' di atas teks */}
-        {/* <div className="w-48 h-32 bg-blue-300 mb-4 mx-auto">[Ilustrasi Proposal]</div>
-             <h2 className="text-2xl font-semibold text-gray-700">Proses Pengajuan Mudah dan Terpadu</h2>
-         </div>
-         */}
+
+        <div className="relative z-10 w-full max-w-md lg:max-w-lg aspect-[4/3] rounded-2xl shadow-xl overflow-hidden backdrop-blur-md bg-white/40">
+          <div
+            className="flex transition-transform duration-500 ease-in-out h-full"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {carouselSlides.map((slide, index) => (
+              <div
+                key={index}
+                className="w-full flex-shrink-0 h-full flex flex-col items-center justify-center text-center p-8 space-y-4"
+              >
+                <div className="relative w-48 h-48 lg:w-64 lg:h-64 mb-4">
+                  <Image
+                    src={slide.image}
+                    alt={slide.alt}
+                    layout="fill"
+                    objectFit="contain"
+                  />
+                </div>
+                <h2 className="text-xl lg:text-2xl font-semibold text-gray-800">
+                  {slide.title}
+                </h2>
+              </div>
+            ))}
+          </div>
+
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {carouselSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  currentSlide === index
+                    ? "bg-secondary"
+                    : "bg-gray-400 hover:bg-gray-500"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
