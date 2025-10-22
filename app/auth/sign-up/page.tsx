@@ -246,7 +246,7 @@ export default function SignUpPage() {
               Sudah punya akun?{" "}
               <Link
                 href="/auth/login"
-                className="font-semibold text-secondary hover:underline"
+                className="font-semibold text-primary hover:underline"
               >
                 Masuk disini.
               </Link>
