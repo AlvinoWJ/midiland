@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
@@ -9,14 +9,15 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "MidiLand",
+  description: "Platform Kemitraan Properti Alfamidi",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  display: "swap",
+const poppins = Poppins({
   subsets: ["latin"],
+  display: "swap",
+  variable: "--font-poppins",
+  weight: ["400", "600"],
 });
 
 export default function RootLayout({
@@ -25,11 +26,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+    // Terapkan variabel font Poppins ke html atau body
+    <html
+      lang="en"
+      className={`${poppins.variable} font-sans`}
+      suppressHydrationWarning
+    >
+      <body className={`antialiased`}>
+        {" "}
+        {/* Kelas font-sans akan mengambil dari html */}
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="system" // Anda bisa set default ke 'light' jika tidak butuh dark mode
           enableSystem
           disableTransitionOnChange
         >
