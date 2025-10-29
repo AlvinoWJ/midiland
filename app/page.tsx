@@ -1,3 +1,6 @@
+// File: app/page.tsx
+// (Versi yang sudah dibersihkan dari Nav/Footer)
+
 "use client";
 
 import Link from "next/link";
@@ -16,43 +19,14 @@ import {
   Phone,
   ChevronDown,
   StoreIcon,
+  ArrowRight,
 } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center bg-gray-50">
-      {/* Navbar */}
-      <nav className="w-full flex justify-center h-16 bg-white shadow-sm sticky top-0 z-50">
-        <div className="w-full max-w-6xl flex justify-between items-center px-4 md:px-6">
-          <Link href="/" className="font-bold text-2xl">
-            <span className="text-primary">Midi</span>
-            <span className="text-secondary">Land</span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Button
-              asChild
-              variant="outline"
-              size="default"
-              className="border-primary text-primary font-semibold rounded-full px-6"
-            >
-              <Link href="/auth/login">Login</Link>
-            </Button>
-
-            <Button
-              asChild
-              variant="default"
-              size="default"
-              className="font-semibold rounded-full px-6"
-            >
-              <Link href="/auth/sign-up">Register</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+    <>
       {/* Hero Section */}
-      <section className="relative w-full overflow-hidden">
+      <section className="relative w-full overflow-hidden bg-gray-50">
         <div className="absolute inset-0 z-0 opacity-10">
           <Image
             alt="Peta Indonesia Latar Belakang"
@@ -64,7 +38,8 @@ export default function Home() {
           />
         </div>
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-8 pt-16 pb-16 md:pt-20">
+          {/* Konten Hero Anda... */}
           <div className="md:w-1/2 space-y-6 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
               Punya property strategis?
@@ -75,10 +50,15 @@ export default function Home() {
               <strong className="text-secondary">Land</strong>
             </p>
             <Button
+              asChild // 1. Tambahkan prop asChild
               size="lg"
-              className="mt-6 bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-6 rounded-lg text-base"
+              // 2. Ganti seluruh className
+              className="mt-6 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-white font-semibold text-base px-6 py-6"
             >
-              Ajukan Property Anda Sekarang
+            <Link href="/dashboard">
+            Ajukan Property Anda Sekarang
+            <ArrowRight size={20} className="ml-2" />
+            </Link>
             </Button>
           </div>
           <div className="w-full md:w-1/2 flex justify-center md:justify-end">
@@ -95,80 +75,51 @@ export default function Home() {
           </div>
         </div>
       </section>
+
       {/* Stats Section */}
-      <div className="w-full max-w-6xl mx-auto px-4 md:px-6 relative z-20 -mt-12 md:-mt-15 mb-16">
-        <div className="bg-white rounded-2xl shadow-[1px_1px_6px_rgba(0,0,0,0.25)] p-6 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
-          <div className="space-y-1 md:space-y-2">
-            <div className="text-3xl md:text-4xl font-bold text-primary">
-              2000+
+      <div className="w-full bg-gray-50 flex justify-center">
+        <div className="w-full max-w-6xl mx-auto px-4 md:px-6 relative z-20 -mt-12 md:-mt-15 mb-16">
+          <div className="bg-white rounded-2xl shadow-[1px_1px_6px_rgba(0,0,0,0.25)] p-6 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+            {/* Konten Stats Anda... */}
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-3xl md:text-4xl font-bold text-primary">
+                2000+
+              </div>
+              <div className="text-gray-600 text-xs md:text-sm font-medium">
+                Mitra Property
+              </div>
             </div>
-            <div className="text-gray-600 text-xs md:text-sm font-medium">
-              Mitra Property
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-3xl md:text-4xl font-bold text-primary">
+                18+
+              </div>
+              <div className="text-gray-600 text-xs md:text-sm font-medium">
+                Tahun Pengalaman
+              </div>
             </div>
-          </div>
-          <div className="space-y-1 md:space-y-2">
-            <div className="text-3xl md:text-4xl font-bold text-primary">
-              18+
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-3xl md:text-4xl font-bold text-primary">
+                1000+
+              </div>
+              <div className="text-gray-600 text-xs md:text-sm font-medium">
+                Kota/Kabupaten
+              </div>
             </div>
-            <div className="text-gray-600 text-xs md:text-sm font-medium">
-              Tahun Pengalaman
-            </div>
-          </div>
-          <div className="space-y-1 md:space-y-2">
-            <div className="text-3xl md:text-4xl font-bold text-primary">
-              1000+
-            </div>
-            <div className="text-gray-600 text-xs md:text-sm font-medium">
-              Kota/Kabupaten
-            </div>
-          </div>
-          <div className="space-y-1 md:space-y-2">
-            <div className="text-3xl md:text-4xl font-bold text-primary">
-              20+
-            </div>
-            <div className="text-gray-600 text-xs md:text-sm font-medium">
-              Juta Pelanggan
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-3xl md:text-4xl font-bold text-primary">
+                20+
+              </div>
+              <div className="text-gray-600 text-xs md:text-sm font-medium">
+                Juta Pelanggan
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Container Utama */}
-      <div className="flex-1 w-full flex flex-col items-center max-w-6xl mx-auto px-4 md:px-6">
-        <section className="w-full flex flex-col md:flex-row items-center gap-12 py-16 md:py-20">
-          <div className="md:w-1/2 flex justify-center">
-            <div className="relative w-full max-w-md aspect-square">
-              <div className="absolute inset-0 bg-gradient-to-br from-red-100 to-red-50 rounded-3xl transform rotate-6"></div>
-              <div className="relative bg-white rounded-3xl shadow-xl p-8 flex items-center justify-center">
-                <Image
-                  src="/location.svg"
-                  alt="Location"
-                  width={350}
-                  height={350}
-                  className=""
-                />
-              </div>
-            </div>
-          </div>
-          <div className="md:w-1/2 space-y-4 text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Apa itu <span className="text-red-600">MidiLand?</span>
-            </h2>
-            <p className="text-gray-600 leading-relaxed text-base">
-              MidiLand merupakan platform yang dirancang untuk menjembatani
-              antara pemilik properti potensial dengan Alfamidi, membuka peluang
-              kerjasama yang menguntungkan.
-            </p>
-            <p className="text-gray-600 leading-relaxed text-base">
-              Kami hadir untuk memudahkan Anda yang memiliki properti strategis
-              untuk bermitra dengan salah satu jaringan ritel terbesar di
-              Indonesia. Dengan platform ini, proses pengajuan properti menjadi
-              lebih mudah, cepat, dan transparan.
-            </p>
-          </div>
-        </section>
-
-        {/* Keuntungan Section */}
+      <div className="flex-1 w-full flex flex-col items-center max-w-6xl mx-auto px-4 md:px-6 bg-gray-50">
+            {/* Keuntungan Section */}
         <section className="w-full py-16 md:py-20">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Keuntungan bersama <span className="text-primary">Midi</span>
@@ -225,9 +176,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-        </section>
-
-        {/* Bagaimana Prosesnya? Section */}
+        </section>        {/* Bagaimana Prosesnya? Section */}
         <section className="w-full py-16 md:py-20 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Bagaimana Prosesnya?
@@ -437,125 +386,6 @@ export default function Home() {
           </div>
         </section>
       </div>
-
-      {/* Footer */}
-      <footer className="w-full bg-gray-900 text-gray-300 py-16">
-        <div className="max-w-6xl mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-sm mb-8">
-            {/* Col 1 */}
-            <div className="space-y-4">
-              <Link href="/" className="font-bold text-2xl inline-block">
-                <span className="text-primary">Midi</span>
-                <span className="text-white">Land</span>
-              </Link>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Platform terpercaya untuk kemitraan properti dengan Alfamidi
-              </p>
-              <p className="text-xs text-gray-500">
-                &copy; {new Date().getFullYear()} PT Midi Utama Indonesia Tbk.
-                All rights reserved.
-              </p>
-              <div className="flex gap-3 pt-2">
-                <a
-                  href="#"
-                  className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                >
-                  <span className="text-xs">FB</span>
-                </a>
-                <a
-                  href="#"
-                  className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                >
-                  <span className="text-xs">IG</span>
-                </a>
-                <a
-                  href="#"
-                  className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                >
-                  <span className="text-xs">TW</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Col 2 */}
-            <div className="space-y-3">
-              <h5 className="font-bold text-white mb-4 text-base">Kontak</h5>
-              <p className="text-sm">Alfamidi Tower</p>
-              <p className="text-sm">Jl. MH Thamrin No. 9</p>
-              <p className="text-sm">Jakarta Pusat, 10340</p>
-              <p className="text-sm">Email: info@alfamidi.co.id</p>
-              <p className="text-sm">Telp: (021) 3199-5000</p>
-            </div>
-
-            {/* Col 3 */}
-            <div className="space-y-3">
-              <h5 className="font-bold text-white mb-4 text-base">
-                Jam Operasional
-              </h5>
-              <p className="text-sm">Senin - Jumat</p>
-              <p className="text-sm font-semibold text-red-500">
-                08:00 - 17:00 WIB
-              </p>
-              <p className="text-sm mt-3">Sabtu, Minggu & Libur Nasional</p>
-              <p className="text-sm font-semibold text-gray-500">Tutup</p>
-            </div>
-
-            {/* Col 4 */}
-            <div className="space-y-3">
-              <h5 className="font-bold text-white mb-4 text-base">Alfamidi</h5>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-red-500 transition-colors text-sm"
-                  >
-                    Tentang Kami
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-red-500 transition-colors text-sm"
-                  >
-                    Karir
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-red-500 transition-colors text-sm"
-                  >
-                    FAQ
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-red-500 transition-colors text-sm"
-                  >
-                    Syarat & Ketentuan
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-red-500 transition-colors text-sm"
-                  >
-                    Kebijakan Privasi
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-xs text-gray-500">
-              MidiLand adalah platform resmi PT Midi Utama Indonesia Tbk untuk
-              kemitraan properti
-            </p>
-          </div>
-        </div>
-      </footer>
-    </main>
+    </>
   );
 }
