@@ -1,6 +1,3 @@
-// File: app/page.tsx
-// (Versi yang sudah dibersihkan dari Nav/Footer)
-
 "use client";
 
 import Link from "next/link";
@@ -11,14 +8,12 @@ import {
   TrendingUp,
   Zap,
   UserPlus,
-  FileText,
   ClipboardCheck,
   HomeIcon,
   Mail,
   MessageCircle,
   Phone,
   ChevronDown,
-  StoreIcon,
   ArrowRight,
 } from "lucide-react";
 
@@ -55,10 +50,10 @@ export default function Home() {
               // 2. Ganti seluruh className
               className="mt-6 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-white font-semibold text-base px-6 py-6"
             >
-            <Link href="/dashboard">
-            Ajukan Property Anda Sekarang
-            <ArrowRight size={20} className="ml-2" />
-            </Link>
+              <Link href="/dashboard">
+                Ajukan Property Anda Sekarang
+                <ArrowRight size={20} className="ml-2" />
+              </Link>
             </Button>
           </div>
           <div className="w-full md:w-1/2 flex justify-center md:justify-end">
@@ -119,7 +114,7 @@ export default function Home() {
 
       {/* Container Utama */}
       <div className="flex-1 w-full flex flex-col items-center max-w-6xl mx-auto px-4 md:px-6 bg-gray-50">
-            {/* Keuntungan Section */}
+        {/* Keuntungan Section */}
         <section className="w-full py-16 md:py-20">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Keuntungan bersama <span className="text-primary">Midi</span>
@@ -176,7 +171,8 @@ export default function Home() {
               </p>
             </div>
           </div>
-        </section>        {/* Bagaimana Prosesnya? Section */}
+        </section>{" "}
+        {/* Bagaimana Prosesnya? Section */}
         <section className="w-full py-16 md:py-20 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Bagaimana Prosesnya?
@@ -249,7 +245,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
         {/* FAQ & Bantuan Section */}
         <section className="w-full grid md:grid-cols-2 gap-12 py-16 md:py-20 border-t border-gray-200">
           {/* FAQ */}
@@ -361,7 +356,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
         {/* CTA Section */}
         <section className="w-full text-center py-16 md:py-20 bg-gradient-to-br from-red-600 to-red-700 rounded-3xl shadow-2xl -mx-4 px-8 md:-mx-6 mb-16 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
