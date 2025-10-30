@@ -129,17 +129,6 @@ export default async function DashboardPage() {
     },
   ];
 
-  // Data untuk 20 Kartu Kontak
-  const contactList = Array.from({ length: 20 }, (_, i) => ({
-    id: `${i + 1}`,
-    branch: `Branch ${String.fromCharCode(65 + (i % 5))}`,
-    nama: `Nama Petugas ${i + 1}`,
-    noHp: `0812-3456-78${i.toString().padStart(2, "0")}`,
-    alamat: `Jl. Contoh Alamat No. ${i + 1}, Kota ${String.fromCharCode(
-      65 + (i % 5)
-    )}`,
-  }));
-
   return (
     <>
       {/* === HERO SECTION === */}
