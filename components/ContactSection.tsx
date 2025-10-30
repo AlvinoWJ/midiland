@@ -106,7 +106,7 @@ function ContactCard({ contact }: { contact: ContactPerson }) {
   return (
     <Card className="overflow-hidden shadow-lg border border-gray-100 rounded-2xl bg-white flex flex-col h-full transition-all duration-300 hover:shadow-xl">
       <Image
-        src={contact.imageUrl || "/images/default.jpg"}
+        src={contact.imageUrl || "/images/bahlil.jpeg"}
         alt={`Foto kantor ${contact.branch}`}
         width={600}
         height={400}
