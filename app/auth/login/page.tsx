@@ -141,7 +141,7 @@ export default function LoginPage() {
         provider: "google",
         options: {
           // redirectTo: `${window.location.origin}/auth/callback`,
-          redirectTo: `/auth/callback`,
+          redirectTo: `https://midiland.vercel.app//auth/callback`,
           queryParams: {
             prompt: "select_account",
           },
