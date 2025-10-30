@@ -1,5 +1,3 @@
-// File: middleware.ts (di root folder Anda)
-
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 

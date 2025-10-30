@@ -15,10 +15,11 @@ import {
   Navigation,
   Loader2,
 } from "lucide-react";
+import Image from "next/image";
 
 interface ContactPerson {
   id: string;
-  imageUrl: string;
+  imageUrl?: string;
   branch: string;
   nama: string;
   noHp: string;
@@ -104,9 +105,11 @@ const DUMMY_CONTACTS: ContactPerson[] = [
 function ContactCard({ contact }: { contact: ContactPerson }) {
   return (
     <Card className="overflow-hidden shadow-lg border border-gray-100 rounded-2xl bg-white flex flex-col h-full transition-all duration-300 hover:shadow-xl">
-      <img
-        src={contact.imageUrl}
+      <Image
+        src={contact.imageUrl || "/images/default.jpg"}
         alt={`Foto kantor ${contact.branch}`}
+        width={600}
+        height={400}
         className="w-full h-40 object-cover"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
