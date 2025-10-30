@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-// import { ContactSection } from "@/components/ContactSection";
 
 type PropertyStatus = "disetujui" | "survey" | "ditolak" | "review";
 
@@ -236,9 +235,7 @@ export default async function DashboardPage() {
 
       {/* === SECTION HUBUNGI KAMI === */}
       <section className="w-full bg-gray-50">
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6 pt-4 pb-20 flex flex-col gap-10">
-          {/* <ContactSection contactList={contactList} /> */}
-        </div>
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6 pt-4 pb-20 flex flex-col gap-10"></div>
       </section>
     </>
   );
