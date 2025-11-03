@@ -1,61 +1,101 @@
-// components/ui/wilayahselect.tsx
-import { ChevronDown } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
-interface WilayahItem {
+export interface WilayahItem {
   code: string;
   name: string;
 }
 
-interface WilayahSelectProps {
+export interface WilayahSelectorProps {
   label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: WilayahItem[];
-  loading: boolean;
-  disabled: boolean;
   placeholder: string;
+  options: WilayahItem[];
+  selectedValue: string | null;
+  onSelect: React.Dispatch<React.SetStateAction<string | null>>;
+  isLoading: boolean;
+  disabled: boolean;
+  maxHeight?: string;
 }
 
 export default function WilayahSelect({
   label,
-  value,
-  onChange,
-  options,
-  loading,
-  disabled,
   placeholder,
-}: WilayahSelectProps) {
-  const selectId = `select-${label.toLowerCase().replace(" ", "-")}`;
+  options,
+  selectedValue,
+  onSelect,
+  isLoading,
+  disabled,
+  maxHeight = "12rem",
+}: WilayahSelectorProps) {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Tutup dropdown ketika klik di luar komponen
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <div>
-      <label
-        htmlFor={selectId}
-        className="block text-sm font-medium text-gray-700 mb-2"
-      >
+    <div className="relative" ref={dropdownRef}>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
         {label} <span className="text-red-600">*</span>
       </label>
-      <div className="relative">
-        <select
-          id={selectId}
-          value={value}
-          onChange={onChange}
-          disabled={disabled || loading}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+
+      {/* Tombol trigger dropdown */}
+      <button
+        type="button"
+        onClick={() => !disabled && setOpen(!open)}
+        className={`w-full px-4 py-2 border border-gray-300 rounded-md text-left flex justify-between items-center ${
+          disabled
+            ? "bg-gray-100 cursor-not-allowed"
+            : "focus:ring-2 focus:ring-red-500"
+        }`}
+      >
+        <span>
+          {isLoading
+            ? "Memuat..."
+            : selectedValue
+            ? options.find((o) => o.code === selectedValue)?.name
+            : placeholder}
+        </span>
+        {open ? (
+          <ChevronUp className="w-4 h-4 text-gray-500" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-gray-500" />
+        )}
+      </button>
+
+      {/* Dropdown menu */}
+      {open && !isLoading && (
+        <ul
+          className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg overflow-y-auto"
+          style={{ maxHeight }}
         >
-          <option value="">{loading ? "Memuat..." : placeholder}</option>
           {options.map((item) => (
-            <option key={item.code} value={item.code}>
+            <li
+              key={item.code}
+              className={`px-4 py-2 hover:bg-red-100 cursor-pointer ${
+                selectedValue === item.code ? "bg-red-50" : ""
+              }`}
+              onClick={() => {
+                onSelect(item.code);
+                setOpen(false);
+              }}
+            >
               {item.name}
-            </option>
+            </li>
           ))}
-        </select>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-          <div className="w-6 h-6 rounded-full border-2 border-red-600 flex items-center justify-center">
-            <ChevronDown className="w-4 h-4 text-red-600" />
-          </div>
-        </div>
-      </div>
+        </ul>
+      )}
     </div>
   );
 }
