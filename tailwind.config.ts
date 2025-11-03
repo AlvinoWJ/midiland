@@ -1,4 +1,3 @@
-// alvinowj/midiland/midiland-front_end/tailwind.config.ts
 import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme"; // Import defaultTheme
 
