@@ -1,4 +1,3 @@
-// app/(main)/input/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,25 +10,21 @@ interface WilayahItem {
 }
 
 export default function InputPage() {
-  // --- State untuk menyimpan list data ---
   const [provinces, setProvinces] = useState<WilayahItem[]>([]);
   const [regencies, setRegencies] = useState<WilayahItem[]>([]);
   const [districts, setDistricts] = useState<WilayahItem[]>([]);
   const [villages, setVillages] = useState<WilayahItem[]>([]);
 
-  // --- State untuk menyimpan nilai yang dipilih ---
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedRegency, setSelectedRegency] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedVillage, setSelectedVillage] = useState(""); // Anda mungkin ingin menyimpan ini juga
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  const [selectedRegency, setSelectedRegency] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedVillage, setSelectedVillage] = useState<string | null>(null);
 
-  // --- State untuk status loading ---
   const [provincesLoading, setProvincesLoading] = useState(false);
   const [regenciesLoading, setRegenciesLoading] = useState(false);
   const [districtsLoading, setDistrictsLoading] = useState(false);
   const [villagesLoading, setVillagesLoading] = useState(false);
 
-  // Fungsi helper untuk fetch data dari API route Anda
   const fetchWilayahData = async (
     type: string,
     code: string | null,
@@ -39,37 +34,32 @@ export default function InputPage() {
     setLoading(true);
     try {
       let url = `/api/wilayah?type=${type}`;
-      if (code) {
-        url += `&code=${code}`;
-      }
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Gagal mengambil data ${type}`);
-      }
-      const jsonResponse = await response.json();
-      setData(jsonResponse.data || []);
-    } catch (error) {
-      console.error(error);
+      if (code) url += `&code=${code}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      setData(json.data || []);
+    } catch (err) {
+      console.error(err);
       setData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // 1. Ambil data Provinsi saat komponen dimuat
+  // Ambil data Provinsi pertama kali
   useEffect(() => {
     fetchWilayahData("provinces", null, setProvinces, setProvincesLoading);
   }, []);
 
-  // 2. Ambil data Kabupaten/Kota saat Provinsi dipilih
+  // Ambil kabupaten/kota setelah provinsi dipilih
   useEffect(() => {
     if (selectedProvince) {
       setRegencies([]);
       setDistricts([]);
       setVillages([]);
-      setSelectedRegency("");
-      setSelectedDistrict("");
-      setSelectedVillage("");
+      setSelectedRegency(null);
+      setSelectedDistrict(null);
+      setSelectedVillage(null);
       fetchWilayahData(
         "regencies",
         selectedProvince,
@@ -79,13 +69,13 @@ export default function InputPage() {
     }
   }, [selectedProvince]);
 
-  // 3. Ambil data Kecamatan saat Kabupaten/Kota dipilih
+  // Ambil kecamatan setelah kabupaten dipilih
   useEffect(() => {
     if (selectedRegency) {
       setDistricts([]);
       setVillages([]);
-      setSelectedDistrict("");
-      setSelectedVillage("");
+      setSelectedDistrict(null);
+      setSelectedVillage(null);
       fetchWilayahData(
         "districts",
         selectedRegency,
@@ -95,11 +85,11 @@ export default function InputPage() {
     }
   }, [selectedRegency]);
 
-  // 4. Ambil data Kelurahan/Desa saat Kecamatan dipilih
+  // Ambil kelurahan/desa setelah kecamatan dipilih
   useEffect(() => {
     if (selectedDistrict) {
       setVillages([]);
-      setSelectedVillage("");
+      setSelectedVillage(null);
       fetchWilayahData(
         "villages",
         selectedDistrict,
@@ -118,6 +108,7 @@ export default function InputPage() {
             <MapPin className="w-6 h-6" />
             <h1 className="text-xl font-semibold">Data Usulan Lokasi</h1>
           </div>
+
           <div className="p-6 space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -129,52 +120,56 @@ export default function InputPage() {
                 placeholder=""
               />
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <WilayahSelect
                 label="Provinsi"
-                value={selectedProvince}
-                onChange={(e) => setSelectedProvince(e.target.value)}
-                options={provinces}
-                loading={provincesLoading}
-                disabled={provincesLoading}
                 placeholder="Pilih Provinsi"
+                options={provinces}
+                selectedValue={selectedProvince}
+                onSelect={setSelectedProvince}
+                isLoading={provincesLoading}
+                disabled={provincesLoading}
               />
+
               <WilayahSelect
                 label="Kabupaten/Kota"
-                value={selectedRegency}
-                onChange={(e) => setSelectedRegency(e.target.value)}
-                options={regencies}
-                loading={regenciesLoading}
-                disabled={!selectedProvince}
                 placeholder={
                   !selectedProvince
                     ? "Pilih Provinsi Dulu"
                     : "Pilih Kabupaten/Kota"
                 }
+                options={regencies}
+                selectedValue={selectedRegency}
+                onSelect={setSelectedRegency}
+                isLoading={regenciesLoading}
+                disabled={!selectedProvince}
               />
+
               <WilayahSelect
                 label="Kecamatan"
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                options={districts}
-                loading={districtsLoading}
-                disabled={!selectedRegency}
                 placeholder={
                   !selectedRegency ? "Pilih Kab/Kota Dulu" : "Pilih Kecamatan"
                 }
+                options={districts}
+                selectedValue={selectedDistrict}
+                onSelect={setSelectedDistrict}
+                isLoading={districtsLoading}
+                disabled={!selectedRegency}
               />
+
               <WilayahSelect
                 label="Kelurahan/Desa"
-                value={selectedVillage}
-                onChange={(e) => setSelectedVillage(e.target.value)}
-                options={villages}
-                loading={villagesLoading}
-                disabled={!selectedDistrict}
                 placeholder={
                   !selectedDistrict
                     ? "Pilih Kecamatan Dulu"
                     : "Pilih Kelurahan/Desa"
                 }
+                options={villages}
+                selectedValue={selectedVillage}
+                onSelect={setSelectedVillage}
+                isLoading={villagesLoading}
+                disabled={!selectedDistrict}
               />
             </div>
 
@@ -186,6 +181,7 @@ export default function InputPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               placeholder=""
             />
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Latlong <span className="text-red-600">*</span>
@@ -231,94 +227,10 @@ export default function InputPage() {
                   </div>
                 </div>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Alas Hak <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder=""
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Jumlah Lantai <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder=""
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Lebar Depan (m) <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder=""
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Panjang (m) <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder=""
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Luas (m) <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder=""
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Harga Sewa (+PPH 10%) <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder=""
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Data Pemilik */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mt-8 mb-8 shadow-[1px_1px_6px_rgba(0,0,0,0.25)]">
-          <div className="bg-red-600 text-white p-4 flex items-center gap-3">
-            <MapPin className="w-6 h-6" />
-            <h1 className="text-xl font-semibold">Data Pemilik</h1>
-          </div>
-
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Pemilik <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder=""
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Kontak Pemilik <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
