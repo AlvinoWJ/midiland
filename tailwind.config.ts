@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme"; // Import defaultTheme
+import tailwindcssAnimate from "tailwindcss-animate"; // <-- PERBAIKAN: Impor di sini
 
 export default {
   darkMode: ["class"],
@@ -82,7 +83,21 @@ export default {
       //   regular: '400',
       //   semibold: '600',
       // }
+
+      // --- PERBAIKAN: TAMBAHAN UNTUK ANIMASI MENGETIK ---
+      keyframes: {
+        typing: {
+          '0%, 100%': { transform: 'translateY(-25%)', opacity: '0.5' },
+          '50%': { transform: 'translateY(0)', opacity: '1' },
+        }
+      },
+      animation: {
+        typing: 'typing 1.2s infinite ease-in-out',
+      }
+      // --- AKHIR PERBAIKAN ---
+
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate], // <-- PERBAIKAN: Gunakan variabel yang diimpor
 } satisfies Config;
+
