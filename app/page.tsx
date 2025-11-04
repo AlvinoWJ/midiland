@@ -16,7 +16,7 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
-import Footer from "@/components/layout/footer";
+import Footer from "@/components/layout/Footer";
 import NavbarLanding from "@/components/layout/navbarlanding";
 
 export default function Home() {
