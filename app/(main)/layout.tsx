@@ -1,6 +1,6 @@
 // File: app/(main)/layout.tsx
-
-import Image from "next/image";
+import NavbarDashboard from "@/components/layout/navbardashboard";
+import Footer from "@/components/layout/footer";
 
 export default function MainAppLayout({
   children,
@@ -9,16 +9,9 @@ export default function MainAppLayout({
 }) {
   return (
     <div className="relative flex-1 bg-gray-50">
-      <div className="absolute inset-0 z-0 opacity-10">
-        <Image
-          src="/indonesia.png"
-          alt="Peta Latar Belakang"
-          layout="fill"
-          objectFit="cover"
-          quality={50}
-        />
-      </div>
+      <NavbarDashboard />
       <div className="relative z-10">{children}</div>
+      <Footer />
     </div>
   );
 }
