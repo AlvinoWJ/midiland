@@ -1,6 +1,6 @@
 // File: app/(main)/layout.tsx
 import NavbarDashboard from "@/components/layout/navbardashboard";
-import Footer from "@/components/layout/footer";
+import Footer from "@/components/layout/Footer";
 
 export default function MainAppLayout({
   children,
