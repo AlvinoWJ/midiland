@@ -1,12 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { ContactSection } from "@/components/ContactSection";
 
 type PropertyStatus = "disetujui" | "survey" | "ditolak" | "review";
 
@@ -77,7 +74,7 @@ function PropertyCard({ property }: { property: UserProperty }) {
         >
           {property.alamat}
         </p>
-        
+
         <div className="flex justify-end pt-2">
           <Link
             href={`/status/${property.id}`}
@@ -131,17 +128,6 @@ export default async function DashboardPage() {
       status: "review",
     },
   ];
-
-  // Data untuk 20 Kartu Kontak
-  const contactList = Array.from({ length: 20 }, (_, i) => ({
-    id: `${i + 1}`,
-    branch: `Branch ${String.fromCharCode(65 + (i % 5))}`,
-    nama: `Nama Petugas ${i + 1}`,
-    noHp: `0812-3456-78${i.toString().padStart(2, "0")}`,
-    alamat: `Jl. Contoh Alamat No. ${i + 1}, Kota ${String.fromCharCode(
-      65 + (i % 5)
-    )}`,
-  }));
 
   return (
     <>
@@ -238,9 +224,7 @@ export default async function DashboardPage() {
 
       {/* === SECTION HUBUNGI KAMI === */}
       <section className="w-full bg-gray-50">
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6 pt-4 pb-20 flex flex-col gap-10">
-          <ContactSection contactList={contactList} />
-        </div>
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6 pt-4 pb-20 flex flex-col gap-10"></div>
       </section>
     </>
   );

@@ -61,7 +61,7 @@ export default function LoginPage() {
     const safeRedirect = () => {
       if (isRedirecting.current) return;
       isRedirecting.current = true;
-      
+
       console.log("Sesi terdeteksi. Me-redirect ke /dashboard...");
       router.push("/dashboard");
       router.refresh();
@@ -73,21 +73,25 @@ export default function LoginPage() {
       ) {
         return;
       }
-      
-      console.log("Pesan 'auth_success' diterima. Memeriksa sesi secara manual...");
 
-      const { data, error } = await supabase.auth.getSession(); 
+      console.log(
+        "Pesan 'auth_success' diterima. Memeriksa sesi secara manual..."
+      );
+
+      const { data, error } = await supabase.auth.getSession();
 
       if (error) {
-         console.error("Gagal getSession:", error.message);
-         return;
+        console.error("Gagal getSession:", error.message);
+        return;
       }
-      
+
       if (data.session) {
         console.log("Sesi terdeteksi dari getSession() manual.");
         safeRedirect();
       } else {
-         console.log("getSession() tidak menemukan sesi. Menunggu onAuthStateChange...");
+        console.log(
+          "getSession() tidak menemukan sesi. Menunggu onAuthStateChange..."
+        );
       }
     };
 
@@ -95,7 +99,7 @@ export default function LoginPage() {
 
     const {
       data: { subscription },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } = supabase.auth.onAuthStateChange((event, _session) => {
       if (event === "SIGNED_IN") {
         console.log("Event SIGNED_IN terdeteksi dari onAuthStateChange.");
@@ -108,7 +112,6 @@ export default function LoginPage() {
       subscription.unsubscribe();
     };
   }, [supabase, router]);
-  
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,11 +124,11 @@ export default function LoginPage() {
       });
       if (error) throw error;
       // Redirect seperti biasa untuk login password
-      router.push("/dashboard"); 
-      router.refresh(); 
+      router.push("/dashboard");
+      router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -138,10 +141,11 @@ export default function LoginPage() {
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          // redirectTo: `https://midiland.vercel.app/auth/callback`,
           queryParams: {
             prompt: "select_account",
           },
-          skipBrowserRedirect: true, 
+          skipBrowserRedirect: true,
         },
       });
 
@@ -164,10 +168,10 @@ export default function LoginPage() {
         error instanceof Error ? error.message : "Terjadi kesalahan saat login"
       );
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
-  
+
   // ... (SISA KODE JSX TIDAK SAYA UBAH) ...
   return (
     <div className="flex h-screen w-full overflow-hidden">
@@ -272,7 +276,7 @@ export default function LoginPage() {
             disabled={isLoading}
           >
             <Image src="/google.svg" alt="Google" width={16} height={16} />
-            {isLoading ? "Mengarahkan..." : "Masuk dengan Google" }
+            {isLoading ? "Mengarahkan..." : "Masuk dengan Google"}
           </Button>
 
           {/* Sign Up Link */}

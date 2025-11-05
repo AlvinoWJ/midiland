@@ -16,10 +16,14 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
+import Footer from "@/components/layout/Footer";
+import NavbarLanding from "@/components/layout/navbarlanding";
+import { ChatBotButton } from "@/components/chatbot/ChatBotButton"; 
 
 export default function Home() {
   return (
     <>
+      <NavbarLanding />
       {/* Hero Section */}
       <section className="relative w-full overflow-hidden bg-gray-50">
         <div className="absolute inset-0 z-0 opacity-10">
@@ -380,6 +384,8 @@ export default function Home() {
           </div>
         </section>
       </div>
+      <ChatBotButton />
+      <Footer />
     </>
   );
 }
