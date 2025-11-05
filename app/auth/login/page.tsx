@@ -1,9 +1,11 @@
+// app/auth/login/page.tsx
+
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +41,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const supabase = useRef(createClient()).current;
+  const isRedirecting = useRef(false);
 
   const nextSlide = () => {
     setCurrentSlide((prev) =>
@@ -53,9 +57,64 @@ export default function LoginPage() {
     return () => clearInterval(timer);
   }, [currentSlide]);
 
+  useEffect(() => {
+    const safeRedirect = () => {
+      if (isRedirecting.current) return;
+      isRedirecting.current = true;
+
+      console.log("Sesi terdeteksi. Me-redirect ke /dashboard...");
+      router.push("/dashboard");
+      router.refresh();
+    };
+    const handleMessage = async (event: MessageEvent) => {
+      if (
+        event.origin !== window.location.origin ||
+        event.data !== "auth_success"
+      ) {
+        return;
+      }
+
+      console.log(
+        "Pesan 'auth_success' diterima. Memeriksa sesi secara manual..."
+      );
+
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("Gagal getSession:", error.message);
+        return;
+      }
+
+      if (data.session) {
+        console.log("Sesi terdeteksi dari getSession() manual.");
+        safeRedirect();
+      } else {
+        console.log(
+          "getSession() tidak menemukan sesi. Menunggu onAuthStateChange..."
+        );
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    const {
+      data: { subscription },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } = supabase.auth.onAuthStateChange((event, _session) => {
+      if (event === "SIGNED_IN") {
+        console.log("Event SIGNED_IN terdeteksi dari onAuthStateChange.");
+        safeRedirect();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      subscription.unsubscribe();
+    };
+  }, [supabase, router]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
     try {
@@ -64,19 +123,56 @@ export default function LoginPage() {
         password,
       });
       if (error) throw error;
-      router.push("/");
+      // Redirect seperti biasa untuk login password
+      router.push("/dashboard");
       router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    alert("Google Sign-In belum diimplementasikan");
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          // redirectTo: `https://midiland.vercel.app/auth/callback`,
+          queryParams: {
+            prompt: "select_account",
+          },
+          skipBrowserRedirect: true,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.url) {
+        const width = 600;
+        const height = 700;
+        const left = window.screen.width / 2 - width / 2;
+        const top = window.screen.height / 2 - height / 2;
+
+        window.open(
+          data.url,
+          "googleLogin",
+          `width=${width},height=${height},top=${top},left=${left}`
+        );
+      }
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Terjadi kesalahan saat login"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // ... (SISA KODE JSX TIDAK SAYA UBAH) ...
   return (
     <div className="flex h-screen w-full overflow-hidden">
       {/* Kolom Kiri: Form Login */}
@@ -180,7 +276,7 @@ export default function LoginPage() {
             disabled={isLoading}
           >
             <Image src="/google.svg" alt="Google" width={16} height={16} />
-            Masuk dengan Google
+            {isLoading ? "Mengarahkan..." : "Masuk dengan Google"}
           </Button>
 
           {/* Sign Up Link */}

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -22,27 +21,17 @@ const poppins = Poppins({
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    // Terapkan variabel font Poppins ke html atau body
     <html
       lang="en"
       className={`${poppins.variable} font-sans`}
       suppressHydrationWarning
     >
-      <body className={`antialiased`}>
-        {" "}
-        {/* Kelas font-sans akan mengambil dari html */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system" // Anda bisa set default ke 'light' jika tidak butuh dark mode
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+      <body className="antialiased">
+        <main>{children}</main>
       </body>
     </html>
   );
