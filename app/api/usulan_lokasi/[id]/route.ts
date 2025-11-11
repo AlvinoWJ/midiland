@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* CRUD: Read detail, Update, Delete ulok_eksternal (with Zod validation) */
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseUpdateUlokEksternalFromFormData } from "@/lib/validation/ulok_eksternal";
@@ -94,14 +93,18 @@ export async function PATCH(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const form = await req.formData();
-
-    // Validasi patch body (tanpa file)
     const patch = parseUpdateUlokEksternalFromFormData(form) as Record<
       string,
       unknown
     >;
 
-    // Cek apakah ada file baru
+    delete patch.status_ulok_eksternal;
+    delete patch.branch_id;
+    delete patch.penanggungjawab;
+    delete patch.approved_at;
+    delete patch.users_eksternal_id; 
+    delete patch.id;
+
     const newFile =
       (form.get("foto_lokasi") as File | null) ||
       (form.get("file") as File | null);
@@ -150,7 +153,6 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    // Hapus file lama bila upload baru sukses
     if (newPath && existing?.foto_lokasi && existing.foto_lokasi !== newPath) {
       await supabase.storage
         .from("file_storage_eksternal")
@@ -191,7 +193,6 @@ export async function DELETE(
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    // Bersihkan folder storage id/ulok_eksternal (best-effort)
     try {
       const prefix = `${params.id}/ulok_eksternal`;
       const { data: files, error: listErr } = await supabase.storage
@@ -203,7 +204,6 @@ export async function DELETE(
         await supabase.storage.from("file_storage_eksternal").remove(paths);
       }
     } catch {
-      // abaikan error pembersihan storage
     }
 
     return NextResponse.json({ success: true });
