@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import NavbarDashboard from "@/components/layout/navbardashboard";
-import Footer from "@/components/layout/footer";
-import { ChatBotButton } from "@/components/chatbot/ChatBotButton";
+import Footer from "@/components/layout/Footer";
+import { ChatBotButton } from "@/components/chatbot/ChatBotButton"; 
 import { createClient } from "@/lib/supabase/client";
 
 export default function MainAppLayout({
@@ -11,7 +11,6 @@ export default function MainAppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // 💡 Buat state untuk menampung nama dan avatar
   const [userData, setUserData] = useState<{ name?: string; avatar?: string }>({
     name: undefined,
     avatar: undefined,
@@ -42,7 +41,10 @@ export default function MainAppLayout({
   return (
     <div className="relative flex-1 bg-gray-50 min-h-screen">
       <NavbarDashboard />
-      <ChatBotButton userName={userData.name} userAvatar={userData.avatar} />
+      <ChatBotButton
+        userName={userData.name}
+        userAvatar={userData.avatar}
+      />
       <div className="relative z-10">{children}</div>
       <Footer />
     </div>
