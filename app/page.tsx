@@ -16,9 +16,9 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
-import Footer from "@/components/layout/Footer";
+import Footer from "@/components/layout/footer";
 import NavbarLanding from "@/components/layout/navbarlanding";
-import { ChatBotButton } from "@/components/chatbot/ChatBotButton"; 
+import { ChatBotButton } from "@/components/chatbot/ChatBotButton";
 
 export default function Home() {
   return (
