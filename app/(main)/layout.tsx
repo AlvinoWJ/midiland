@@ -27,13 +27,10 @@ export default function MainAppLayout({
       }
 
       if (data.user) {
-        const name =
-          data.user.user_metadata.full_name ||
-          data.user.email;
+        const name = data.user.user_metadata.full_name || data.user.email;
         const avatar =
-          data.user.user_metadata.avatar_url ||
-          data.user.user_metadata.picture;
-          
+          data.user.user_metadata.avatar_url || data.user.user_metadata.picture;
+
         setUserData({ name, avatar });
       }
     }
