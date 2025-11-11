@@ -31,9 +31,7 @@ export const createUlokEksternalSchema = z.object({
   panjang: z
     .number({ error: "panjang harus number" })
     .positive("panjang harus > 0"),
-  luas: z
-    .number({ error: "luas harus number" })
-    .positive("luas harus > 0"),
+  luas: z.number({ error: "luas harus number" }).positive("luas harus > 0"),
   harga_sewa: z
     .number({ error: "harga_sewa harus number" })
     .min(0, "harga_sewa minimal 0"),
