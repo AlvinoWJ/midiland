@@ -62,10 +62,8 @@ export default function InputPage() {
   const [villagesLoading, setVillagesLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    nama_lokasi: "",
     alamat: "",
     latlong: "",
-    format_store: "",
     bentuk_objek: "",
     alas_hak: "",
     jumlah_lantai: "",
@@ -217,12 +215,8 @@ export default function InputPage() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.nama_lokasi)
-      newErrors.nama_lokasi = "Nama lokasi wajib diisi";
     if (!formData.alamat) newErrors.alamat = "Alamat wajib diisi";
     if (!formData.latlong) newErrors.latlong = "Latlong wajib diisi";
-    if (!formData.format_store)
-      newErrors.format_store = "Format store wajib dipilih";
     if (!formData.bentuk_objek)
       newErrors.bentuk_objek = "Bentuk objek wajib dipilih";
     if (!formData.alas_hak) newErrors.alas_hak = "Alas hak wajib diisi";
@@ -534,38 +528,6 @@ export default function InputPage() {
 
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-md font-medium text-gray-700 mb-2">
-                    Format Store <span className="text-red-600">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="format_store"
-                      value={formData.format_store}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent "
-                    >
-                      <option value="" className="" disabled hidden>
-                        Pilih Format
-                      </option>
-                      <option value="Reguler">Reguler</option>
-                      <option value="Super">Super</option>
-                      <option value="Spesifik">Spesifik</option>
-                      <option value="Franchise">Franchise</option>
-                    </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <div className="w-6 h-6 rounded-full border-2 border-red-600 flex items-center justify-center">
-                        <ChevronDown className="w-4 h-4 text-red-600" />
-                      </div>
-                    </div>
-                  </div>
-                  {errors.format_store && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {errors.format_store}
-                    </p>
-                  )}
-                </div>
-
                 <div>
                   <label className="block text-md font-medium text-gray-700 mb-2">
                     Bentuk Objek <span className="text-red-600">*</span>
