@@ -3,19 +3,19 @@ import { UlokEksternal, TimelineStep } from '@/lib/types/ulok-eksternal';
 
 export const timelineDummy: Record<string, TimelineStep[]> = {
     "4149b6e5-90f9-4036-a619-46e11d901060": [
-        { step: "Pengajuan Lokasi", status: "completed", details: "06 Nov 2025" },
+        { step: "Pengajuan Lokasi", status: "completed", details: "2025-11-06T10:30:00Z" }, 
         { step: "Pengecekan Awal (Survey)", status: "completed", details: "08 Nov 2025" },
         { step: "Verifikasi Dokumen", status: "in-progress", details: "Sedang diproses oleh Tim Legal" },
         { step: "Penawaran & Kontrak", status: "pending" },
     ],
     "0c603888-b385-4bcd-8ebe-5d47628ce23c": [
-        { step: "Pengajuan Lokasi", status: "completed", details: "05 Nov 2025" },
+        { step: "Pengajuan Lokasi", status: "completed", details: "2025-11-05T14:15:00Z" }, 
         { step: "Pengecekan Awal (Survey)", status: "completed", details: "06 Nov 2025" },
         { step: "Verifikasi Dokumen", status: "completed", details: "07 Nov 2025" },
         { step: "Penawaran & Tanda Tangan Kontrak", status: "completed", details: "Disetujui: 07 Nov 2025" },
     ],
     "a3e8d24c-9f70-4b2a-8c01-1e9a7e0a6d5f": [
-        { step: "Pengajuan Lokasi", status: "completed", details: "01 Agt 2025" },
+        { step: "Pengajuan Lokasi", status: "completed", details: "2025-08-01T09:00:00Z" }, 
         { step: "Pengecekan Awal (Survey)", status: "pending", details: "Menunggu Jadwal Survey & Kelengkapan Data" },
         { step: "Verifikasi Dokumen", status: "pending" },
     ]
@@ -30,11 +30,7 @@ export const generateDefaultTimeline = (property: UlokEksternal): TimelineStep[]
         { 
             step: "Pengajuan Lokasi", 
             status: "completed", 
-            details: new Date(property.created_at).toLocaleDateString('id-ID', { 
-                day: '2-digit', 
-                month: 'short', 
-                year: 'numeric' 
-            })
+            details: property.created_at
         },
     ];
 
