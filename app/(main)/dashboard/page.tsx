@@ -5,32 +5,26 @@ import { ArrowRight, Plus, MapPin, Clock, CheckCircle2, XCircle, AlertCircle } f
 import Link from "next/link";
 import Image from "next/image";
 
-// Status yang diharapkan oleh tampilan front-end
 type PropertyStatus = "disetujui" | "survey" | "ditolak" | "review";
-// Status yang mungkin datang dari kolom status_ulok_eksternal (misalnya 'In Progress' dari enum ulok_approval)
 type DbStatus = PropertyStatus | "In Progress"; 
 
-// Interface untuk data mentah dari tabel ulok_eksternal. 
-// PERBAIKAN: Menggunakan 'kabupaten' sesuai skema DB.
 interface DatabaseProperty {
   id: string;
   alamat: string;
   status_ulok_eksternal: DbStatus;
-  kabupaten: string | null; // Diganti dari kota_kabupaten
+  kabupaten: string | null;
   kecamatan: string | null;     
 }
 
-// Interface yang digunakan oleh komponen (untuk tampilan)
 interface UserProperty {
   id: string;
   nama: string;
-  alamat: string; // Alamat lengkap
-  kabupaten: string | null; // Diganti dari kota_kabupaten
-  kecamatan: string | null;     // Kecamatan
+  alamat: string;
+  kabupaten: string | null;
+  kecamatan: string | null;
   status: PropertyStatus;
 }
 
-// Fungsi untuk memetakan status database ke status tampilan
 const mapStatus = (dbStatus: DbStatus): PropertyStatus => {
   switch (dbStatus) {
     case "disetujui":
@@ -87,49 +81,38 @@ function PropertyCard({ property }: { property: UserProperty }) {
   };
 
   const statusInfo = getStatusInfo(property.status);
-  
-  // LOGIC BARU: Tampilkan Kecamatan dan Kabupaten, jika tersedia.
-  // Format: [Kecamatan], [Kabupaten]
+
   const locationText = 
-    property.kecamatan && property.kabupaten // Menggunakan 'kabupaten'
+    property.kecamatan && property.kabupaten
       ? `${property.kecamatan}, ${property.kabupaten}`
-      : property.alamat; // Fallback ke alamat lengkap jika data kecamatan/kabupaten tidak ada
+      : property.alamat;
       
-  const locationTitle = property.alamat; // Gunakan alamat lengkap untuk tooltip
+  const locationTitle = property.alamat;
 
   return (
     <Card className="group relative overflow-hidden border border-gray-200 hover:border-primary/30 hover:shadow-xl transition-all duration-300 rounded-xl bg-white">
-      {/* Gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
       <CardContent className="relative p-6 flex flex-col gap-4">
-        {/* Status Badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <h3 className="text-xl font-semibold text-gray-900 mb-2 truncate group-hover:text-primary transition-colors" title={property.nama}>
               {property.nama}
             </h3>
-            
-            {/* Tampilan Lokasi (Kecamatan, Kabupaten) */}
             <div className="flex items-start gap-2 text-gray-600">
               <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
               <p className="text-sm leading-relaxed line-clamp-2" title={locationTitle}>
                 {locationText}
               </p>
             </div>
-            
           </div>
-          
+      
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${statusInfo.color} shrink-0 transition-transform group-hover:scale-105`}>
             <div className={`w-2 h-2 rounded-full ${statusInfo.dotColor} animate-pulse`} />
             <span className="text-xs font-semibold whitespace-nowrap">{statusInfo.text}</span>
           </div>
         </div>
-
-        {/* Divider */}
         <div className="border-t border-gray-100" />
 
-        {/* Action Button */}
         <Link
           href={`/status?selected=${property.id}`}
           className="flex items-center justify-between text-sm font-medium text-primary hover:text-primary/80 transition-colors group/link"
@@ -142,7 +125,6 @@ function PropertyCard({ property }: { property: UserProperty }) {
   );
 }
 
-// === Halaman Dashboard ===
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -159,7 +141,6 @@ export default async function DashboardPage() {
   let fetchError: string | null = null;
 
   if (user) {
-    // PERBAIKAN DISINI: Menggunakan kolom `kabupaten` dan `kecamatan` pada SELECT
     const { data, error } = await supabase
       .from("ulok_eksternal")
       .select("id, alamat, status_ulok_eksternal, kabupaten, kecamatan")
@@ -177,7 +158,6 @@ export default async function DashboardPage() {
         nama: prop.alamat,
         alamat: prop.alamat,
         status: mapStatus(prop.status_ulok_eksternal),
-        // Mapping kolom yang benar
         kabupaten: prop.kabupaten,
         kecamatan: prop.kecamatan, 
       }));
@@ -188,9 +168,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* === HERO SECTION === */}
       <section className="relative w-full overflow-hidden bg-white">
-        {/* Background Pattern */}
         <div className="absolute inset-0 z-0 opacity-5">
           <Image
             alt="Peta Indonesia Latar Belakang"
@@ -204,7 +182,6 @@ export default async function DashboardPage() {
 
         <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 py-16 lg:py-24">
-            {/* Left Content */}
             <div className="flex-1 flex flex-col text-center lg:text-left items-center lg:items-start max-w-2xl">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -233,7 +210,6 @@ export default async function DashboardPage() {
               </Button>
             </div>
 
-            {/* Right Illustration */}
             <div className="flex-1 flex justify-center lg:justify-end max-w-md lg:max-w-lg w-full">
               <div className="relative w-full">
                 <Image
@@ -250,7 +226,6 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      {/* Error Display */}
       {fetchError && (
         <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 shadow-sm">
@@ -266,7 +241,6 @@ export default async function DashboardPage() {
         </section>
       )}
 
-      {/* === DAFTAR PROPERTY === */}
       <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="flex items-center justify-between mb-8">
           <div>
