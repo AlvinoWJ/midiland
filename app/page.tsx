@@ -16,7 +16,7 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
-import Footer from "@/components/layout/footer";
+import Footer from "@/components/layout/Footer";
 import NavbarLanding from "@/components/layout/navbarlanding";
 import { ChatBotButton } from "@/components/chatbot/ChatBotButton";
 
@@ -24,7 +24,6 @@ export default function Home() {
   return (
     <>
       <NavbarLanding />
-      {/* Hero Section */}
       <section className="relative w-full overflow-hidden bg-gray-50">
         <div className="absolute inset-0 z-0 opacity-10">
           <Image
@@ -38,7 +37,6 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-8 pt-16 pb-16 md:pt-20">
-          {/* Konten Hero Anda... */}
           <div className="md:w-1/2 space-y-6 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
               Punya property strategis?
@@ -49,9 +47,8 @@ export default function Home() {
               <strong className="text-secondary">Land</strong>
             </p>
             <Button
-              asChild // 1. Tambahkan prop asChild
+              asChild
               size="lg"
-              // 2. Ganti seluruh className
               className="mt-6 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-white font-semibold text-base px-6 py-6"
             >
               <Link href="/dashboard">
@@ -75,11 +72,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
       <div className="w-full bg-gray-50 flex justify-center">
         <div className="w-full max-w-6xl mx-auto px-4 md:px-6 relative z-20 -mt-12 md:-mt-15 mb-16">
           <div className="bg-white rounded-2xl shadow-[1px_1px_6px_rgba(0,0,0,0.25)] p-6 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
-            {/* Konten Stats Anda... */}
             <div className="space-y-1 md:space-y-2">
               <div className="text-3xl md:text-4xl font-bold text-primary">
                 2000+
@@ -116,9 +111,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Container Utama */}
       <div className="flex-1 w-full flex flex-col items-center max-w-6xl mx-auto px-4 md:px-6 bg-gray-50">
-        {/* Keuntungan Section */}
         <section className="w-full py-16 md:py-20">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Keuntungan bersama <span className="text-primary">Midi</span>
@@ -129,7 +122,6 @@ export default function Home() {
             pemilik properti
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Card 1 */}
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow p-8 text-center space-y-4">
               <div className="w-16 h-16 bg-red-100 rounded-full mx-auto flex items-center justify-center">
                 <Handshake className="w-8 h-8 text-red-600" />
@@ -145,7 +137,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Card 2 */}
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow p-8 text-center space-y-4">
               <div className="w-16 h-16 bg-red-100 rounded-full mx-auto flex items-center justify-center">
                 <TrendingUp className="w-8 h-8 text-red-600" />
@@ -160,7 +151,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Card 3 */}
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow p-8 text-center space-y-4">
               <div className="w-16 h-16 bg-red-100 rounded-full mx-auto flex items-center justify-center">
                 <Zap className="w-8 h-8 text-red-600" />
@@ -176,7 +166,6 @@ export default function Home() {
             </div>
           </div>
         </section>{" "}
-        {/* Bagaimana Prosesnya? Section */}
         <section className="w-full py-16 md:py-20 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Bagaimana Prosesnya?
@@ -187,10 +176,8 @@ export default function Home() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6 relative">
-            {/* Connecting Lines - Desktop Only */}
             <div className="hidden md:block absolute top-20 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-red-200 via-red-400 to-red-200"></div>
 
-            {/* Step 1 */}
             <div className="flex flex-col items-center space-y-4 relative">
               <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg relative z-10">
                 <UserPlus className="w-10 h-10 text-white" />
@@ -205,7 +192,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Step 2 */}
             <div className="flex flex-col items-center space-y-4 relative">
               <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg relative z-10">
                 <HomeIcon className="w-10 h-10 text-white" />
@@ -220,7 +206,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Step 3 */}
             <div className="flex flex-col items-center space-y-4 relative">
               <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg relative z-10">
                 <ClipboardCheck className="w-10 h-10 text-white" />
@@ -235,7 +220,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Step 4 */}
             <div className="flex flex-col items-center space-y-4 relative">
               <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg relative z-10">
                 <Handshake className="w-10 h-10 text-white" />
@@ -249,9 +233,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        {/* FAQ & Bantuan Section */}
         <section className="w-full grid md:grid-cols-2 gap-12 py-16 md:py-20 border-t border-gray-200">
-          {/* FAQ */}
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-gray-900">FAQ</h2>
             <p className="text-gray-600 text-sm">
@@ -300,7 +282,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Bantuan */}
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-gray-900">
               Butuh Bantuan?
@@ -360,7 +341,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        {/* CTA Section */}
+
         <section className="w-full text-center py-16 md:py-20 bg-gradient-to-br from-red-600 to-red-700 rounded-3xl shadow-2xl -mx-4 px-8 md:-mx-6 mb-16 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>

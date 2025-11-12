@@ -27,7 +27,7 @@ export const AssetDetailContent: React.FC<AssetDetailContentProps> = ({
     created_at, bentuk_objek, nama_pemilik, kontak_pemilik,
     provinsi, kabupaten, kecamatan, desa_kelurahan, latitude, longitude,
     lebar_depan, jumlah_lantai, luas, harga_sewa, alamat, alas_hak, panjang,
-    foto_lokasi, status_ulok_eksternal
+    foto_lokasi, status_ulok_eksternal, updated_at
   } = editedProperty;
 
   const statusColor =
@@ -118,33 +118,63 @@ export const AssetDetailContent: React.FC<AssetDetailContentProps> = ({
   const IconLuasTanah = Square;
   const IconNamaPemilik = User;
   const IconKontakPemilik = Phone;
+  
+  const formatDateTime = (dateString: string) => {
+    const formatted = new Date(dateString).toLocaleString('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23'
+    });
+
+    const parts = formatted.split(', ');
+    const datePart = parts[0]; 
+    let timePart = parts[1]; 
+    
+    if (timePart) {
+        timePart = timePart.replace(/\./g, ':');
+    }
+    return `${datePart}, ${timePart}`;
+  };
+
+  const hasBeenUpdated = updated_at && new Date(updated_at).getTime() !== new Date(created_at).getTime();
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 to-white border-t-4 border-rose-500 space-y-6">
-      <div className="flex flex-wrap gap-3 items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-        <div className="flex items-center space-x-2">
-          <Calendar className="w-4 h-4 text-blue-600" />
-          <span className="text-sm text-gray-700">
-            <span className="font-medium">Dibuat:</span>{" "}
-            <span className="font-bold">
-              {new Date(created_at).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
-            </span>
-          </span>
+      <div className="flex justify-between items-start p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+        <div className="flex flex-col space-y-1"> 
+            <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-blue-600" />
+                <span className="text-sm text-gray-700">
+                    <span className="font-medium">Dibuat:</span>{" "}
+                    <span className="font-bold">
+                        {formatDateTime(created_at)}
+                    </span>
+                </span>
+            </div>
+            
+            {hasBeenUpdated && (
+                <div className="flex items-center space-x-2">
+                    <Calendar className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm text-gray-700">
+                        <span className="font-medium">Di edit pada:</span>{" "}
+                        <span className="font-bold">
+                            {formatDateTime(updated_at)}
+                        </span>
+                    </span>
+                </div>
+            )}
         </div>
-
-        <div className="flex items-center space-x-2">
-          <PinIcon className="w-4 h-4 text-blue-600" />
-          <span className="text-sm font-bold text-gray-800">{alamat}</span>
-        </div>
-
-        <div className={`px-3 py-1 border rounded-full text-xs font-bold capitalize ${statusColor}`}>
+  
+        <div className={`px-3 py-1 border rounded-full text-xs font-bold capitalize ${statusColor} flex-shrink-0 mt-0.5`}>
           {status_ulok_eksternal}
         </div>
-
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
         <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
           <div className="flex items-center space-x-2 mb-4 pb-3 border-b border-gray-200">
             <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-lg">
