@@ -9,15 +9,12 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const type = searchParams.get("type");
-  const redirectTo = searchParams.get("redirect");
 
   if (!code) {
     return NextResponse.redirect(new URL("/auth/error", request.url));
   }
 
-  // ✅ Versi aman & kompatibel penuh TypeScript
   const cookieStore = await Promise.resolve(cookies());
-
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       getAll: () => cookieStore.getAll(),
@@ -29,18 +26,19 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  // Tukar kode Supabase menjadi session
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    //console.error("❌ Error during exchangeCodeForSession:", error.message);
+    console.error("❌ Error during exchangeCodeForSession:", error.message);
     return NextResponse.redirect(new URL("/auth/error", request.url));
   }
 
-  // ✅ Jika login via popup (misal Google OAuth)
-  if (redirectTo === "popup") {
-    return new NextResponse(
-      `
+  if (type === "signup") {
+    return NextResponse.redirect(new URL("/auth/complete-profile", origin));
+  }
+
+  return new NextResponse(
+    `
       <!DOCTYPE html>
       <html>
         <head><title>Login Sukses</title></head>
@@ -51,16 +49,7 @@ export async function GET(request: NextRequest) {
           </script>
         </body>
       </html>
-      `,
-      { headers: { "Content-Type": "text/html" } }
-    );
-  }
-
-  // ✅ Kalau hasil dari verifikasi email (sign up)
-  if (type === "signup") {
-    return NextResponse.redirect(new URL("/auth/complete-profile", origin));
-  }
-
-  // ✅ Kalau hasil dari login biasa
-  return NextResponse.redirect(new URL("/dashboard", origin));
+    `,
+    { headers: { "Content-Type": "text/html" } }
+  );
 }
