@@ -1,10 +1,36 @@
-//app/auth/complete-profile/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
+const carouselSlides = [
+  {
+    image: "/carousel1.svg",
+    alt: "Ilustrasi Proses Pengajuan",
+    title: "Proses Pengajuan Mudah dan Terpadu",
+  },
+  {
+    image: "/carousel2.svg",
+    alt: "Ilustrasi Profesional",
+    title: "Survei dan Verifikasi Profesional",
+  },
+  {
+    image: "/carousel3.svg",
+    alt: "Ilustrasi Kerja Sama",
+    title: "Kerja Sama Aman dan Transparan",
+  },
+  {
+    image: "/carousel4.svg",
+    alt: "Ilustrasi Perkembangan",
+    title: "Nilai Aset Semakin Berkembang",
+  },
+];
 
 export default function CompleteProfilePage() {
   const router = useRouter();
@@ -18,6 +44,20 @@ export default function CompleteProfilePage() {
 
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === carouselSlides.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [currentSlide]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -106,72 +146,178 @@ export default function CompleteProfilePage() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-xl p-6 w-full max-w-md space-y-4"
-      >
-        <h1 className="text-xl font-semibold text-gray-800 text-center">
-          Lengkapi Data Profil
-        </h1>
+    <div className="flex h-screen w-full overflow-hidden">
+      <div className="relative flex w-full md:w-1/2 flex-col justify-center items-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
+        <div className="w-full max-w-lg space-y-4">
+          <div className="flex justify-center text-left mb-3">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Lengkapi Profil <span className="text-secondary">Midi</span>
+              <span className="text-primary">Land</span>
+            </h1>
+          </div>
+          <div className="flex justify-center mb-3">
+            <Image
+              src="/alfamidi.svg"
+              alt="Header Gambar"
+              width={350}
+              height={250}
+              className="object-contain"
+              priority
+            />
+          </div>
 
-        <div>
-          <label className="text-sm text-gray-600">Nama Lengkap</label>
-          <input
-            type="text"
-            name="nama"
-            value={form.nama}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Masukkan nama lengkap"
-            required
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <Label
+                htmlFor="nama"
+                className="text-gray-900 font-medium text-sm"
+              >
+                Nama Lengkap
+              </Label>
+              <Input
+                id="nama"
+                type="text"
+                name="nama"
+                value={form.nama}
+                onChange={handleChange}
+                placeholder="Masukkan nama lengkap"
+                required
+                className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label
+                htmlFor="email"
+                className="text-gray-900 font-medium text-sm"
+              >
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                value={form.email}
+                readOnly
+                className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm bg-gray-100 cursor-not-allowed"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label
+                htmlFor="no_telp"
+                className="text-gray-900 font-medium text-sm"
+              >
+                No. Telepon
+              </Label>
+              <Input
+                id="no_telp"
+                type="tel"
+                name="no_telp"
+                value={form.no_telp}
+                onChange={handleChange}
+                placeholder="Contoh: 08123456789"
+                required
+                className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label
+                htmlFor="alamat"
+                className="text-gray-900 font-medium text-sm"
+              >
+                Alamat
+              </Label>
+              <Textarea
+                id="alamat"
+                name="alamat"
+                value={form.alamat}
+                onChange={handleChange}
+                placeholder="Masukkan alamat lengkap"
+                required
+                className="border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm"
+                rows={3}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-md"
+              disabled={loading}
+            >
+              {loading ? "Menyimpan..." : "Simpan dan Lanjut"}
+            </Button>
+          </form>
+        </div>
+      </div>
+
+      <div className="hidden md:flex md:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/login.svg"
+            alt="City Background"
+            fill
+            className="object-cover"
+            quality={100}
+            priority
           />
         </div>
-
-        <div>
-          <label className="text-sm text-gray-600">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            readOnly
-            className="w-full border rounded-lg p-2 mt-1 bg-gray-100 cursor-not-allowed"
-          />
+        
+        <div className="absolute top-6 right-6">
+          <div className="border-2 border-white rounded-xl p-2 bg-white shadow-md">
+            <Image
+              src="/alfamidilogo.svg"
+              alt="Alfamidi Logo"
+              width={150}
+              height={40}
+              className="object-contain"
+              priority
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="text-sm text-gray-600">No. Telepon</label>
-          <input
-            type="tel"
-            name="no_telp"
-            value={form.no_telp}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Contoh: 08123456789"
-            required
-          />
-        </div>
+        <div className="relative z-10 w-full max-w-md lg:max-w-lg aspect-[4/3] rounded-2xl shadow-xl overflow-hidden backdrop-blur-md bg-white/40">
+          <div
+            className="flex transition-transform duration-500 ease-in-out h-full"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {carouselSlides.map((slide, index) => (
+              <div
+                key={index}
+                className="w-full flex-shrink-0 h-full flex flex-col items-center justify-center text-center p-8 space-y-4"
+              >
+                <div className="relative w-48 h-48 lg:w-64 lg:h-64 mb-4">
+                  <Image
+                    src={slide.image}
+                    alt={slide.alt}
+                    layout="fill"
+                    objectFit="contain"
+                  />
+                </div>
+                <h2 className="text-xl lg:text-2xl font-semibold text-gray-800">
+                  {slide.title}
+                </h2>
+              </div>
+            ))}
+          </div>
 
-        <div>
-          <label className="text-sm text-gray-600">Alamat</label>
-          <textarea
-            name="alamat"
-            value={form.alamat}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Masukkan alamat lengkap"
-            required
-          />
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {carouselSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  currentSlide === index
+                    ? "bg-secondary"
+                    : "bg-gray-400 hover:bg-gray-500"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition disabled:opacity-60"
-        >
-          {loading ? "Menyimpan..." : "Simpan dan Lanjut"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 }
