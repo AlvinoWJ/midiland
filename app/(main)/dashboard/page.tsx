@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Plus, MapPin, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { ArrowRight, Plus, MapPin, Clock, CheckCircle2, XCircle, AlertCircle, Search} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -275,16 +275,7 @@ export default async function DashboardPage() {
         ) : (
           <Card className="border-2 border-dashed border-gray-300 hover:border-primary/50 transition-colors rounded-2xl bg-white">
             <CardContent className="flex flex-col items-center justify-center py-16 px-6 text-center">
-              <div className="relative mb-6">
-                <div className="absolute inset-0 bg-primary/10 rounded-full blur-2xl" />
-                <Image
-                  src="/no-data.svg"
-                  alt="Tidak ada data"
-                  width={180}
-                  height={180}
-                  className="relative"
-                />
-              </div>
+              <Search className="w-16 h-16 mx-auto mb-6 text-gray-300" />
               
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
                 Belum Ada Properti

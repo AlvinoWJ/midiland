@@ -123,7 +123,6 @@ export default function LoginPage() {
         password,
       });
       if (error) throw error;
-      // Redirect seperti biasa untuk login password
       router.push("/dashboard");
       router.refresh();
     } catch (error: unknown) {
@@ -141,7 +140,6 @@ export default function LoginPage() {
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          // redirectTo: `https://midiland.vercel.app/auth/callback`,
           queryParams: {
             prompt: "select_account",
           },
@@ -172,10 +170,8 @@ export default function LoginPage() {
     }
   };
 
-  // ... (SISA KODE JSX TIDAK SAYA UBAH) ...
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      {/* Kolom Kiri: Form Login */}
       <div className="relative flex w-full md:w-1/2 flex-col justify-center items-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
         <div className="w-full max-w-lg space-y-4">
           <div className="flex justify-center text-left mb-3">
@@ -184,10 +180,9 @@ export default function LoginPage() {
               <span className="text-primary">Land</span>
             </h1>
           </div>
-          {/* Gambar tambahan di atas teks “Masuk ke MidiLand” */}
           <div className="flex justify-center mb-3">
             <Image
-              src="/alfamidi.svg" // ganti nama file kamu jadi ini di folder public
+              src="/alfamidi.svg"
               alt="Header Gambar"
               width={350}
               height={250}
@@ -196,7 +191,6 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleLogin} className="space-y-3">
             <div className="space-y-1">
               <Label
@@ -256,7 +250,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Separator */}
           <div className="relative my-3">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-gray-300" />
@@ -268,7 +261,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Google Sign In */}
           <Button
             variant="outline"
             className="w-full h-10 flex items-center justify-center gap-2 border-gray-300 hover:border-none rounded-lg font-medium text-sm"
@@ -279,7 +271,6 @@ export default function LoginPage() {
             {isLoading ? "Mengarahkan..." : "Masuk dengan Google"}
           </Button>
 
-          {/* Sign Up Link */}
           <div className="text-center text-xs text-gray-700 pt-1">
             Belum punya akun?{" "}
             <Link
@@ -292,7 +283,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Kolom Kanan: Carousel */}
       <div className="hidden md:flex md:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
@@ -304,7 +294,7 @@ export default function LoginPage() {
             priority
           />
         </div>
-        {/* Logo Alfamidi di pojok kanan atas */}
+        
         <div className="absolute top-6 right-6">
           <div className="border-2 border-white rounded-xl p-2 bg-white shadow-md">
             <Image

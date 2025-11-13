@@ -153,18 +153,14 @@ export const useFetchData = () => {
                 } else if (typeof err === 'string') {
                     errorMessage = err;
                 }
-                
                 setError(errorMessage);
-                
                 setData([]);
                 
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, []);
-
     return { data, loading, error };
 };
