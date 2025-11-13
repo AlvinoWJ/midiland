@@ -58,3 +58,67 @@
     display: none;
   }
 }
+
+/* CSS Tour LAMA DIHAPUS (.tour-highlight-active dan @keyframes tour-pulse-border) */
+
+/* Smooth animations (Ini bisa tetap dipakai) */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.zoom-in {
+  animation: zoom-in 0.3s ease-out;
+}
+
+/* ===============================================
+TAMBAHKAN CSS BARU DI BAWAH INI
+===============================================
+*/
+
+/* Styling Kustom untuk Driver.js */
+
+/* Mengganti warna tombol utama dan highlight */
+:root {
+  /* Ambil warna dari --primary Anda */
+  --driver-popover-btn-bg: #D11A22 !important; 
+  --driver-popover-btn-hover-bg: #b91c1c !important; /* Versi lebih gelap */
+  --driver-popover-btn-text-color: #ffffff !important;
+
+  /* Warna sorotan elemen aktif */
+  --driver-popover-active-step-bg: #D11A22 !important; 
+}
+
+/* Mengganti warna teks progress (cth: "1/18") */
+.driver-popover-progress-text {
+  color: #D11A22 !important;
+}
+
+/* (Opsional) Mengganti warna judul popover */
+.driver-popover-title {
+  color: #1f2937 !important; /* Abu-abu gelap */
+  font-weight: 700 !important; /* font-bold */
+}

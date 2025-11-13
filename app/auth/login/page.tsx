@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
 const carouselSlides = [
   {
@@ -43,6 +44,7 @@ export default function LoginPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const supabase = useRef(createClient()).current;
   const isRedirecting = useRef(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const nextSlide = () => {
     setCurrentSlide((prev) =>
@@ -202,7 +204,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="email@contoh.com"
+                placeholder="Masukkan alamat email Anda"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -225,14 +227,33 @@ export default function LoginPage() {
                   Lupa Kata Sandi?
                 </Link>
               </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Masukkan kata sandi Anda"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center justify-center h-full w-10 text-gray-500 hover:text-gray-700"
+                  aria-label={
+                    showPassword
+                      ? "Sembunyikan kata sandi"
+                      : "Tampilkan kata sandi"
+                  }
+                >
+                  {showPassword ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {error && (
