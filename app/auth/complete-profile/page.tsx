@@ -1,3 +1,5 @@
+//app/auth/complete-profile/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -20,9 +22,8 @@ export default function CompleteProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("/api/users_eksternal/profile", {
+        const res = await fetch("/api/profile", {
           method: "GET",
-          // credentials include cookie session by default on same-origin
         });
 
         if (res.status === 401) {
