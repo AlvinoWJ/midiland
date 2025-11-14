@@ -30,6 +30,18 @@ export const AssetAccordionRow: React.FC<AssetAccordionRowProps> = ({ property, 
     };
     
     const PropertyIcon = getPropertyIcon();
+
+    const formatDateTime = (dateString: string) => {
+        return new Date(dateString).toLocaleString('id-ID', { 
+            weekday: 'long', 
+            day: '2-digit', 
+            month: 'short', 
+            year: 'numeric',
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    };
     
     return (
         <div className={`rounded-2xl transition-all duration-300 ${isSelected ? 'shadow-2xl ring-2 ring-rose-500 bg-white' : 'shadow-md bg-white hover:shadow-xl'}`}>
@@ -46,7 +58,7 @@ export const AssetAccordionRow: React.FC<AssetAccordionRowProps> = ({ property, 
                         <div className="flex items-center space-x-2 mb-1">
                             <Calendar className="w-3 h-3 text-gray-400" />
                             <p className="text-xs text-gray-500 font-medium">
-                                {new Date(created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                {formatDateTime(created_at)}
                             </p>
                         </div>
                         <p className="text-base font-bold text-gray-800 truncate">{alamat}</p>

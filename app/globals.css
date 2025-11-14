@@ -4,36 +4,27 @@
 
 @layer base {
   :root {
-    --background: 210 17% 98%; /* #F8F9FA -> Kira-kira HSL */
-    --foreground: 0 0% 18%; /* #2E2E2E -> Kira-kira HSL */
-
-    --card: 0 0% 100%; /* Default putih */
-    --card-foreground: 0 0% 18%; /* Teks #2E2E2E */
-
-    --popover: 0 0% 100%; /* Default putih */
-    --popover-foreground: 0 0% 18%; /* Teks #2E2E2E */
-
-    --primary: 357 78% 43%; /* #D11A22 -> Kira-kira HSL */
-    --primary-foreground: 0 0% 98%; /* Teks putih kontras */
-
-    --secondary: 213 54% 41%; /* #305D9F -> Kira-kira HSL */
-    --secondary-foreground: 0 0% 98%; /* Teks putih kontras */
-
-    --muted: 210 17% 92%; /* Shade lebih gelap dari background */
-    --muted-foreground: 0 0% 45%; /* Abu-abu default, sesuaikan jika perlu */
-
-    --accent: 145 63% 49%; /* #2ECC71 -> Kira-kira HSL (Approved/Button Primary?) */
-    --accent-foreground: 0 0% 98%; /* Teks putih kontras */
-
-    /* Destructive mungkin bisa sama dengan primary (merah) */
+    --background: 210 17% 98%; 
+    --foreground: 0 0% 18%; 
+    --card: 0 0% 100%; 
+    --card-foreground: 0 0% 18%;
+    --popover: 0 0% 100%; 
+    --popover-foreground: 0 0% 18%; 
+    --primary: 357 78% 43%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 213 54% 41%;
+    --secondary-foreground: 0 0% 98%; 
+    --muted: 210 17% 92%; 
+    --muted-foreground: 0 0% 45%;
+    --accent: 145 63% 49%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 357 78% 43%;
     --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%; 
+    --ring: 213 54% 41%; 
 
-    --border: 0 0% 89.8%; /* Default, sesuaikan jika perlu */
-    --input: 0 0% 89.8%; /* Default, sesuaikan jika perlu */
-    --ring: 213 54% 41%; /* Biru secondary untuk ring? Sesuaikan. */
-
-    --radius: 0.5rem; /* Default shadcn */
+    --radius: 0.5rem;
   }
 }
 
@@ -57,4 +48,60 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.zoom-in {
+  animation: zoom-in 0.3s ease-out;
+}
+
+:root {
+  --driver-popover-btn-bg: #D11A22 !important; 
+  --driver-popover-btn-hover-bg: #b91c1c !important;
+  --driver-popover-btn-text-color: #ffffff !important;
+  --driver-popover-active-step-bg: #D11A22 !important; 
+}
+
+.driver-popover-progress-text {
+  color: #D11A22 !important;
+}
+
+.driver-popover-title {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px hsl(var(--card)) inset !important;
+  -webkit-text-fill-color: hsl(var(--foreground)) !important;
 }
