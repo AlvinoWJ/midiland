@@ -155,7 +155,7 @@ export default function DashboardWithAccordion() {
       <div className="w-full max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
-            Dashboard Usulan Lokasi
+            Status Property
           </h1>
           <p className="text-gray-600 font-medium">
             Kelola dan pantau usulan lokasi Anda secara real-time
