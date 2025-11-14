@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Search,
@@ -38,14 +38,16 @@ const formatFullDateTime = (dateString: string) => {
   });
 };
 
-export default function DashboardWithAccordion() {
+function DashboardContent() {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("selected");
 
   const { data: fetchedProperties, loading, error } = useFetchData();
   const [propertiesData, setPropertiesData] = useState<UlokEksternal[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeAccordionId, setActiveAccordionId] = useState<string | null>(null);
+  const [activeAccordionId, setActiveAccordionId] = useState<string | null>(
+    null
+  );
   const daftarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,16 +60,17 @@ export default function DashboardWithAccordion() {
     const element = document.getElementById(`accordion-${accordionId}`);
     if (!element) return;
 
-    const FIXED_TOP_OFFSET = 80; 
+    const FIXED_TOP_OFFSET = 80;
 
     requestAnimationFrame(() => {
-        const elemRect = element.getBoundingClientRect();
-        const targetScrollY = window.scrollY + elemRect.top - FIXED_TOP_OFFSET + 4;
+      const elemRect = element.getBoundingClientRect();
+      const targetScrollY =
+        window.scrollY + elemRect.top - FIXED_TOP_OFFSET + 4;
 
-        window.scrollTo({
-          top: targetScrollY,
-          behavior: "smooth",
-        });
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: "smooth",
+      });
     });
   };
 
@@ -76,7 +79,10 @@ export default function DashboardWithAccordion() {
       const propertyExists = propertiesData.some((p) => p.id === selectedId);
       if (propertyExists) {
         setActiveAccordionId(selectedId);
-        setTimeout(() => scrollAccordionHeaderToAlignWithTimeline(selectedId), 300);
+        setTimeout(
+          () => scrollAccordionHeaderToAlignWithTimeline(selectedId),
+          300
+        );
       }
     }
   }, [selectedId, propertiesData]);
@@ -163,9 +169,24 @@ export default function DashboardWithAccordion() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <KPICard title="Total Aset Terdaftar" value={total} Icon={List} color="text-indigo-600" />
-          <KPICard title="Pengajuan Aktif" value={pending} Icon={Clock} color="text-amber-600" />
-          <KPICard title="Aset Aktif Disewa" value={rented} Icon={CheckCircle} color="text-green-600" />
+          <KPICard
+            title="Total Aset Terdaftar"
+            value={total}
+            Icon={List}
+            color="text-indigo-600"
+          />
+          <KPICard
+            title="Pengajuan Aktif"
+            value={pending}
+            Icon={Clock}
+            color="text-amber-600"
+          />
+          <KPICard
+            title="Aset Aktif Disewa"
+            value={rented}
+            Icon={CheckCircle}
+            color="text-green-600"
+          />
         </div>
 
         <div className="p-6 bg-white rounded-2xl shadow-lg border border-gray-100 mb-8">
@@ -189,7 +210,9 @@ export default function DashboardWithAccordion() {
                         <Clock className="w-3 h-3 inline mr-1 text-gray-400" />
                         {formatFullDateTime(p.created_at)}
                       </p>
-                      <p className="font-bold text-gray-900 truncate">{p.alamat}</p>
+                      <p className="font-bold text-gray-900 truncate">
+                        {p.alamat}
+                      </p>
                       <p className="text-xs text-gray-500">
                         {p.kabupaten}, {p.provinsi}
                       </p>
@@ -202,9 +225,14 @@ export default function DashboardWithAccordion() {
           </div>
         </div>
 
-        <div ref={daftarRef} className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
+        <div
+          ref={daftarRef}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6"
+        >
           <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold text-gray-900">Daftar Usulan Lokasi</h3>
+            <h3 className="text-2xl font-bold text-gray-900">
+              Daftar Usulan Lokasi
+            </h3>
           </div>
           <div className="lg:col-span-1">
             <div className="relative w-full">
@@ -237,8 +265,12 @@ export default function DashboardWithAccordion() {
               ) : (
                 <div className="text-center p-16 bg-white rounded-2xl shadow-lg border-2 border-dashed border-gray-200">
                   <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <p className="font-bold text-gray-700 mb-2">Tidak ada aset ditemukan</p>
-                  <p className="text-sm text-gray-500">Coba kata kunci lain atau tambahkan usulan baru</p>
+                  <p className="font-bold text-gray-700 mb-2">
+                    Tidak ada aset ditemukan
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Coba kata kunci lain atau tambahkan usulan baru
+                  </p>
                 </div>
               )}
             </div>
@@ -269,5 +301,13 @@ export default function DashboardWithAccordion() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DashboardWithAccordion() {
+  return (
+    <Suspense fallback={<div className="p-6 text-center">Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
