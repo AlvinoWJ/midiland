@@ -1,5 +1,3 @@
-// app/auth/login/page.tsx
-
 "use client";
 
 import Link from "next/link";
@@ -174,14 +172,26 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      <div className="relative flex w-full md:w-1/2 flex-col justify-center items-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
-        <div className="w-full max-w-lg space-y-4">
-          <div className="flex justify-center text-left mb-3">
-            <h1 className="text-2xl font-bold text-gray-900">
+      <div className="relative flex w-full lg:w-1/2 flex-col items-center md:justify-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
+        <div className="w-full max-w-lg space-y-4 pt-8 md:pt-0"> 
+          <div className="flex justify-center mb-3 lg:hidden">
+            <Image
+              src="/alfamidilogo.svg"
+              alt="Alfamidi Logo"
+              width={100}
+              height={40}
+              className="object-contain md:w-[150px]"
+              priority
+            />
+          </div>
+
+          <div className="flex justify-center text-center lg:text-left mb-3">
+            <h1 className="text-xl font-bold text-gray-900">
               Masuk ke <span className="text-secondary">Midi</span>
               <span className="text-primary">Land</span>
             </h1>
           </div>
+
           <div className="flex justify-center mb-3">
             <Image
               src="/alfamidi.svg"
@@ -292,7 +302,7 @@ export default function LoginPage() {
             {isLoading ? "Mengarahkan..." : "Masuk dengan Google"}
           </Button>
 
-          <div className="text-center text-xs text-gray-700 pt-1">
+          <div className="text-center text-xs text-gray-700 pt-1 pb-8 md:pb-0">
             Belum punya akun?{" "}
             <Link
               href="/auth/sign-up"
@@ -304,7 +314,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="hidden md:flex md:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/login.svg"
