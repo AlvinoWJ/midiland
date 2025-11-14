@@ -10,6 +10,7 @@ import ProcessSection from "../components/landing/ProcessSection";
 import FaqAndContactSection from "../components/landing/FaqAndContactSection";
 import CTASection from "../components/landing/CTASection";
 
+
 export default function Home() {
   return (
     <>
