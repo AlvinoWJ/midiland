@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -45,13 +46,19 @@ interface ChangePasswordFormProps {
 }
 
 const LockIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
-      />
-    </svg>
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+    />
+  </svg>
 );
 
 const ChangePasswordForm = ({ setSettingView }: ChangePasswordFormProps) => {
@@ -67,7 +74,10 @@ const ChangePasswordForm = ({ setSettingView }: ChangePasswordFormProps) => {
     setMessage(null);
 
     if (!isPasswordValid) {
-      setMessage({ type: "error", text: "Password baru harus minimal 8 karakter." });
+      setMessage({
+        type: "error",
+        text: "Password baru harus minimal 8 karakter.",
+      });
       return;
     }
 
@@ -81,7 +91,10 @@ const ChangePasswordForm = ({ setSettingView }: ChangePasswordFormProps) => {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
 
     if (error) {
-      setMessage({ type: "error", text: "Gagal mengganti password: " + error.message });
+      setMessage({
+        type: "error",
+        text: "Gagal mengganti password: " + error.message,
+      });
     } else {
       setMessage({ type: "success", text: "Password berhasil diganti!" });
       setNewPassword("");
@@ -162,6 +175,7 @@ const ChangePasswordForm = ({ setSettingView }: ChangePasswordFormProps) => {
 };
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<ActiveTab>("user-info");
   const [settingView, setSettingView] = useState<SettingView>("main");
   const [user, setUser] = useState<User | null>(null);
@@ -181,17 +195,18 @@ export default function ProfilePage() {
 
   const userAvatar =
     user?.user_metadata?.avatar_url ||
-    `https://placehold.co/100x100/dc2626/fdecd5?text=${avatarFallback}`; 
+    `https://placehold.co/100x100/dc2626/fdecd5?text=${avatarFallback}`;
 
   const fetchUserProfile = useCallback(async () => {
     setLoading(true);
     const supabase = createClient();
-    
+
     const { data: auth } = await supabase.auth.getUser();
 
     if (!auth.user) {
       setUser(null);
       setLoading(false);
+      router.replace("/auth/login");
       return;
     }
 
@@ -204,8 +219,8 @@ export default function ProfilePage() {
       .maybeSingle();
 
     if (error) {
-        console.error("Gagal mengambil profile:", error);
-        setSaveMessage({ type: "error", text: "Gagal memuat data profile." });
+      console.error("Gagal mengambil profile:", error);
+      setSaveMessage({ type: "error", text: "Gagal memuat data profile." });
     }
 
     setProfile({
@@ -218,60 +233,65 @@ export default function ProfilePage() {
 
     setLoading(false);
     setSaveMessage(null);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     fetchUserProfile();
   }, [fetchUserProfile]);
 
-const handleSaveChanges = async () => {
+  const handleSaveChanges = async () => {
     if (!user) {
-        setSaveMessage({ type: "error", text: "Pengguna tidak terautentikasi." });
-        return;
+      setSaveMessage({ type: "error", text: "Pengguna tidak terautentikasi." });
+      return;
     }
-    
+
     setSaveMessage({ type: "info", text: "Menyimpan perubahan..." });
     setLoading(true);
 
     const updateData = {
       id: user.id,
-      email: profile.email, 
+      email: profile.email,
       nama: profile.nama.trim() || null,
       no_telp: profile.no_telp?.trim() || null,
       alamat: profile.alamat?.trim() || null,
       updated_at: new Date().toISOString(),
     };
-    
+
     if (!updateData.email) {
-        setLoading(false);
-        setSaveMessage({ type: "error", text: "Email tidak ditemukan di profil." });
-        return;
+      setLoading(false);
+      setSaveMessage({
+        type: "error",
+        text: "Email tidak ditemukan di profil.",
+      });
+      return;
     }
 
-    const { error } = await createClient().from("users_eksternal").upsert([updateData], {
-      onConflict: "id",
-    });
+    const { error } = await createClient()
+      .from("users_eksternal")
+      .upsert([updateData], {
+        onConflict: "id",
+      });
 
     setLoading(false);
 
     if (error) {
-        console.error("Gagal menyimpan data ke Supabase:", error.message); 
-        setSaveMessage({ 
-            type: "error", 
-            text: `Gagal menyimpan: ${error.message}.`
-        });
-        setTimeout(() => {
-            setSaveMessage(null);
-        }, 5000);
+      console.error("Gagal menyimpan data ke Supabase:", error.message);
+      setSaveMessage({
+        type: "error",
+        text: `Gagal menyimpan: ${error.message}.`,
+      });
+      setTimeout(() => {
+        setSaveMessage(null);
+      }, 5000);
     } else {
-        setSaveMessage({ type: "success", text: "Perubahan berhasil disimpan!" });
-        setTimeout(async () => {
-            await fetchUserProfile();
-        }, 3000);
+      setSaveMessage({ type: "success", text: "Perubahan berhasil disimpan!" });
+      setTimeout(async () => {
+        await fetchUserProfile();
+      }, 3000);
     }
-};
+  };
   const renderContent = () => {
-    if (loading && !user && !saveMessage) 
+    if (loading && !user && !saveMessage)
       return (
         <Card>
           <CardContent className="p-6 text-center">
@@ -280,7 +300,7 @@ const handleSaveChanges = async () => {
           </CardContent>
         </Card>
       );
-    
+
     if (activeTab === "user-info") {
       if (settingView !== "main") setSettingView("main");
 
@@ -294,14 +314,14 @@ const handleSaveChanges = async () => {
                   <AvatarFallback>{avatarFallback}</AvatarFallback>
                 </Avatar>
 
-                <div className="text-center"> 
+                <div className="text-center">
                   <h2 className="text-xl font-semibold">{userName}</h2>
                   <p className="text-muted-foreground text-sm break-words">
                     {profile.email}
                   </p>
                 </div>
               </div>
-              
+
               {saveMessage && (
                 <div
                   className={`p-3 rounded-lg transition-all duration-300 ${
@@ -373,8 +393,8 @@ const handleSaveChanges = async () => {
                 >
                   {loading ? (
                     <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Menyimpan...
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Menyimpan...
                     </>
                   ) : (
                     "Save Changes"
@@ -409,23 +429,23 @@ const handleSaveChanges = async () => {
     }
 
     if (activeTab === "notifications") {
-        if (settingView !== "main") setSettingView("main");
-        
-        return (
-            <Card>
-                <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold">Notifikasi</h2>
-                    <p className="text-muted-foreground text-sm mt-2">
-                        Pengaturan notifikasi akan tersedia segera.
-                    </p>
-                </CardContent>
-            </Card>
-        );
+      if (settingView !== "main") setSettingView("main");
+
+      return (
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold">Notifikasi</h2>
+            <p className="text-muted-foreground text-sm mt-2">
+              Pengaturan notifikasi akan tersedia segera.
+            </p>
+          </CardContent>
+        </Card>
+      );
     }
-    
+
     return null;
   };
-  
+
   const MobileNav = () => (
     <nav className="bg-white border-r py-4 px-2 flex flex-col gap-4 md:hidden">
       <button
@@ -532,7 +552,13 @@ const handleSaveChanges = async () => {
 
 function UserCircleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -544,7 +570,13 @@ function UserCircleIcon(props: React.SVGProps<SVGSVGElement>) {
 
 function SettingsIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -561,7 +593,13 @@ function SettingsIcon(props: React.SVGProps<SVGSVGElement>) {
 
 function BellIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -572,33 +610,73 @@ function BellIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 function UserIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a1.5 1.5 0 011.892-1.436L12 18m0 0l3.607 1.203a1.5 1.5 0 011.892 1.436" />
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a1.5 1.5 0 011.892-1.436L12 18m0 0l3.607 1.203a1.5 1.5 0 011.892 1.436"
+      />
     </svg>
   );
 }
 
 function MailIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.687a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.687a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+      />
     </svg>
   );
 }
 
 function PhoneIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.383a1.5 1.5 0 00-.475-1.073L18.75 16.5a1.5 1.5 0 00-1.073-.475l-.763-.257a1.5 1.5 0 00-1.289.462l-1.404 1.404a18.024 18.024 0 01-7.079-7.079l1.404-1.404c.346-.346.46-.867.257-1.289l-.257-.763a1.5 1.5 0 00-1.073-.475H3.75A2.25 2.25 0 001.5 3.75v2.25c0 1.243 1.007 2.25 2.25 2.25h14.25" />
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.383a1.5 1.5 0 00-.475-1.073L18.75 16.5a1.5 1.5 0 00-1.073-.475l-.763-.257a1.5 1.5 0 00-1.289.462l-1.404 1.404a18.024 18.024 0 01-7.079-7.079l1.404-1.404c.346-.346.46-.867.257-1.289l-.257-.763a1.5 1.5 0 00-1.073-.475H3.75A2.25 2.25 0 001.5 3.75v2.25c0 1.243 1.007 2.25 2.25 2.25h14.25"
+      />
     </svg>
   );
 }
 
 function MapPinIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+      />
     </svg>
   );
 }

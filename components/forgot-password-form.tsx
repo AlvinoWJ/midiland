@@ -1,61 +1,21 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
-// Tipe untuk alur UI
 type Step = "enter_email" | "enter_code" | "enter_new_password";
 type Message = { type: "error" | "success"; content: string } | null;
 
-const EyeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
+const cn = (...classes: (string | boolean | undefined)[]) => {
+  return classes.filter(Boolean).join(" ");
+};
 
-const EyeOffIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-    <line x1="2" x2="22" y1="2" y2="22" />
-  </svg>
-);
-
-
-export function ForgotPasswordForm() {
-  // --- State and Logic ---
+export default function ForgotPasswordForm() {
   const [step, setStep] = useState<Step>("enter_email");
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
@@ -67,11 +27,10 @@ export function ForgotPasswordForm() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState<Message>(null);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
   const supabase = createClient();
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // --- Countdown Timer Effect ---
   useEffect(() => {
     if (step !== "enter_code" || countdown <= 0) {
       return;
@@ -83,14 +42,16 @@ export function ForgotPasswordForm() {
     return () => clearInterval(timer);
   }, [step, countdown]);
 
-  // Langkah 1: Mengirim email pemulihan password
   const handleSendRecoveryEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage(null);
 
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-      email
+      email,
+      {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      }
     );
 
     if (resetError) {
@@ -107,19 +68,18 @@ export function ForgotPasswordForm() {
     setIsLoading(false);
   };
 
-  // --- Kirim ulang kode OTP ---
   const handleResendOtp = async () => {
     setIsResending(true);
     setMessage(null);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      });
       if (error) throw error;
+      
       setToken("");
       setCountdown(60);
-      setMessage({
-        type: "success",
-        content: "Kode verifikasi baru telah dikirim.",
-      });
+      setMessage({ type: "success", content: "Kode verifikasi baru telah dikirim." });
     } catch (err) {
       setMessage({
         type: "error",
@@ -131,14 +91,10 @@ export function ForgotPasswordForm() {
     }
   };
 
-  // Langkah 2: Memverifikasi kode OTP
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (token.length < 6) {
-      setMessage({
-        type: "error",
-        content: "Silakan masukkan 6 digit kode lengkap.",
-      });
+      setMessage({ type: "error", content: "Silakan masukkan 6 digit kode lengkap." });
       return;
     }
     setIsLoading(true);
@@ -164,14 +120,14 @@ export function ForgotPasswordForm() {
     }
   };
 
-  // Langkah 3: Mengatur ulang password
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setMessage({
-        type: "error",
-        content: "Password tidak sama / tidak sesuai.",
-      });
+      setMessage({ type: "error", content: "Password tidak sama / tidak sesuai." });
+      return;
+    }
+    if (newPassword.length < 6) {
+      setMessage({ type: "error", content: "Password minimal 6 karakter." });
       return;
     }
     setIsLoading(true);
@@ -182,15 +138,13 @@ export function ForgotPasswordForm() {
       });
       if (error) throw error;
       await supabase.auth.signOut();
-      
-      // Menggunakan state message untuk notifikasi sukses
+
       setMessage({
         type: "success",
         content: "Password berhasil diubah! Mengarahkan ke login...",
       });
-      
       setTimeout(() => {
-         router.push("/auth/login");
+        router.push("/auth/login");
       }, 2000);
 
     } catch (err) {
@@ -206,18 +160,15 @@ export function ForgotPasswordForm() {
     }
   };
 
-  // --- Handlers untuk Input OTP ---
   const handleTokenChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     const char = value.slice(-1);
-
     const newToken = [...token.split("")];
     newToken[index] = char;
     setToken(newToken.join("").slice(0, 6));
-
     if (char && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -229,6 +180,10 @@ export function ForgotPasswordForm() {
   ) => {
     if (e.key === "Backspace" && e.currentTarget.value === "" && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleVerifyOtp(e);
     }
   };
 
@@ -246,41 +201,29 @@ export function ForgotPasswordForm() {
     ).padStart(2, "0")}`;
   };
 
-  // --- Komponen untuk menampilkan pesan error/sukses ---
   const renderMessage = () => {
     if (!message) return null;
-    const classes =
-      message.type === "error"
-        ? "text-red-600 bg-red-100"
-        : "text-green-600 bg-green-100";
-    return (
-      <div className={`p-3 rounded-md text-sm ${classes} text-center`}>
-        {message.content}
-      </div>
-    );
+    if (message.type === 'error') {
+      return <p className="text-xs text-primary bg-red-50 p-2 rounded-lg">{message.content}</p>;
+    }
+    if (message.type === 'success') {
+      return <p className="text-xs text-green-600 bg-green-50 p-2 rounded-lg">{message.content}</p>;
+    }
+    return null;
   };
 
-  // --- UI ---
   const renderStepContent = () => {
-    const inputClasses =
-      "text-sm placeholder:text-sm bg-white border-gray-300 text-black placeholder-gray-400 selection:bg-gray-200 selection:text-black autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] autofill:[-webkit-text-fill-color:theme(colors.black)]";
-    const passwordInputClasses = cn(inputClasses, "pr-10");
+    const labelClasses = "text-gray-900 font-medium text-sm";
+    const inputClasses = "h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm";
+    const buttonClasses = "w-full bg-secondary hover:bg-secondary/90 text-white rounded-md h-10";
 
     switch (step) {
       case "enter_email":
         return (
-          <form
-            onSubmit={handleSendRecoveryEmail}
-            className="flex flex-col gap-6"
-          >
-            <div className="text-center">
-              <h2 className="text-xl font-semibold">Lupa Password</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Masukkan email Anda untuk menerima kode verifikasi.
-              </p>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+          <form onSubmit={handleSendRecoveryEmail} className="space-y-3">
+            {message && renderMessage()}
+            <div className="space-y-1">
+              <Label htmlFor="email" className={labelClasses}>Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -291,42 +234,35 @@ export function ForgotPasswordForm() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button 
+              type="submit"
+              className={buttonClasses}
+              disabled={isLoading}
+            >
               {isLoading ? "Mengirim..." : "Kirim Kode Verifikasi"}
             </Button>
-            <p className="text-center text-sm">
-              Ingat password Anda?{" "}
-              <Link href="/auth/login" className="font-semibold text-red-600 hover:text-red-700">
-                Login
-              </Link>
-            </p>
           </form>
         );
 
       case "enter_code":
         return (
-          <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold">Cek Email Anda</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Kami telah mengirim kode ke{" "}
-                <span className="font-medium text-black">{email}</span>.
-              </p>
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="token-0" className="text-center">
-                Kode Verifikasi
+          <form onSubmit={handleVerifyOtp} className="space-y-4">
+            <p className="text-sm text-gray-600 text-center">
+              Kode 6 digit telah dikirim ke <span className="font-semibold text-gray-900">{email}</span>
+            </p>
+            {message && renderMessage()}
+            <div>
+              <Label htmlFor="token-0" className={cn(labelClasses, "text-center block mb-2")}>
+                Masukkan Kode Verifikasi
               </Label>
               <div
                 className="flex justify-center gap-2 sm:gap-3"
                 onPaste={handlePaste}
               >
                 {Array.from({ length: 6 }).map((_, index) => (
-                  <Input
+                  <input
                     key={index}
-                    ref={(el) => {
-                      inputRefs.current[index] = el;
-                    }}
+                    ref={(el) => { inputRefs.current[index] = el; }}
                     id={`token-${index}`}
                     type="text"
                     inputMode="numeric"
@@ -336,51 +272,62 @@ export function ForgotPasswordForm() {
                     onChange={(e) => handleTokenChange(e, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onFocus={(e) => e.target.select()}
-                    className="aspect-square h-auto w-full max-w-[48px] rounded-lg text-center text-2xl font-bold bg-white border-gray-300 text-black"
+                    className="aspect-square h-auto w-full max-w-[48px] rounded-lg text-center text-2xl font-bold bg-white border-2 border-gray-300 text-gray-900 focus:border-secondary focus:ring-secondary focus:outline-none transition-all duration-200"
                     autoComplete="one-time-code"
                     required
                   />
                 ))}
               </div>
             </div>
-            <div className="text-center text-sm text-gray-500">
+            
+            <div className="text-center text-sm">
               {countdown > 0 ? (
-                <p>Kirim ulang kode dalam {formatTime(countdown)}</p>
+                <p className="text-gray-600">
+                  Kirim ulang kode dalam <span className="font-mono font-semibold text-gray-900">{formatTime(countdown)}</span>
+                </p>
               ) : (
-                <Button
+                <button
                   type="button"
-                  variant="link"
-                  className="p-0 h-auto text-red-600 hover:text-red-700"
+                  className="font-semibold text-primary hover:underline"
                   onClick={handleResendOtp}
                   disabled={isResending}
                 >
                   {isResending ? "Mengirim ulang..." : "Kirim Ulang Kode"}
-                </Button>
+                </button>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Memverifikasi..." : "Verifikasi"}
+            
+            <Button 
+              type="submit"
+              className={buttonClasses}
+              disabled={isLoading || token.length < 6}
+            >
+              {isLoading ? "Memverifikasi..." : "Verifikasi Kode"}
             </Button>
+            
+            <button
+              type="button"
+              onClick={() => setStep("enter_email")}
+              className="w-full text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
+            >
+              ← Kembali
+            </button>
           </form>
         );
 
       case "enter_new_password":
         return (
-          <form onSubmit={handleUpdatePassword} className="flex flex-col gap-6">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold">Atur Password Baru</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Kode terverifikasi. Silakan buat password baru Anda.
-              </p>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="newPassword">Password Baru</Label>
+          <form onSubmit={handleUpdatePassword} className="space-y-3">
+            {message && renderMessage()}
+            
+            <div className="space-y-1">
+              <Label htmlFor="newPassword" className={labelClasses}>Password Baru</Label>
               <div className="relative">
                 <Input
                   id="newPassword"
                   type={showNewPassword ? "text" : "password"}
-                  placeholder="Masukkan password baru"
-                  className={passwordInputClasses}
+                  placeholder="Minimal 6 karakter"
+                  className={cn(inputClasses, "pr-10")}
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -388,25 +335,26 @@ export function ForgotPasswordForm() {
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                  className="absolute inset-y-0 right-0 flex items-center justify-center h-full w-10 text-gray-500 hover:text-gray-700"
                   aria-label="Toggle new password visibility"
                 >
                   {showNewPassword ? (
-                    <EyeOffIcon className="h-5 w-5" />
+                    <Eye className="h-5 w-5" />
                   ) : (
-                    <EyeIcon className="h-5 w-5" />
+                    <EyeOff className="h-5 w-5" />
                   )}
                 </button>
               </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">Konfirmasi Password Baru</Label>
+            
+            <div className="space-y-1">
+              <Label htmlFor="confirmPassword" className={labelClasses}>Konfirmasi Password</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Konfirmasi password baru"
-                  className={passwordInputClasses}
+                  placeholder="Ulangi password baru"
+                  className={cn(inputClasses, "pr-10")}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -414,18 +362,23 @@ export function ForgotPasswordForm() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                  className="absolute inset-y-0 right-0 flex items-center justify-center h-full w-10 text-gray-500 hover:text-gray-700"
                   aria-label="Toggle confirm password visibility"
                 >
                   {showConfirmPassword ? (
-                    <EyeOffIcon className="h-5 w-5" />
+                    <Eye className="h-5 w-5" />
                   ) : (
-                    <EyeIcon className="h-5 w-5" />
+                    <EyeOff className="h-5 w-5" />
                   )}
                 </button>
               </div>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            
+            <Button 
+              type="submit"
+              className={buttonClasses}
+              disabled={isLoading}
+            >
               {isLoading ? "Menyimpan..." : "Reset Password"}
             </Button>
           </form>
@@ -434,23 +387,8 @@ export function ForgotPasswordForm() {
   };
 
   return (
-    <Card className="w-full max-w-md rounded-3xl bg-white shadow-lg lg:rounded-lg lg:shadow-none">
-      <CardHeader className="flex flex-col items-center space-y-2 pt-8">
-        <Image
-          src="/MidiLand.png"
-          alt="MidiLand Logo"
-          width={200}
-          height={48}
-          priority
-          className="h-auto w-48"
-        />
-      </CardHeader>
-      <CardContent className="px-6 pb-8 lg:px-8">
-        {renderStepContent()}
-        <div className="mt-4">
-          {renderMessage()}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="w-full">
+      {renderStepContent()}
+    </div>
   );
 }

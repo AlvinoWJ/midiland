@@ -8,6 +8,35 @@ interface TimelineStatusProps {
     assetName: string | undefined;
 }
 
+const formatDateTime = (dateString: string | undefined): string => {
+    if (!dateString) return '';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+
+    const formatted = date.toLocaleString('id-ID', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23' 
+    });
+
+    const parts = formatted.split(', ');
+    const datePart = parts[0]; 
+    let timePart = parts[1]; 
+    
+    if (timePart) {
+        timePart = timePart.replace(/\./g, ':');
+    }
+    
+    return `${datePart}, ${timePart}`;
+};
+
+
 export const TimelineStatus: React.FC<TimelineStatusProps> = ({ property, assetName }) => {
     if (!property) {
       return (
@@ -64,6 +93,29 @@ export const TimelineStatus: React.FC<TimelineStatusProps> = ({ property, assetN
                 const isCompleted = item.status === 'completed';
                 const isInProgress = item.status === 'in-progress';
 
+                let detailText: string = item.details || ''; 
+
+                if (item.step === "Pengajuan Lokasi" && property?.created_at) {
+                    detailText = formatDateTime(property.created_at);
+                } 
+                else if (item.details) {
+                    const isDateWithTime = typeof item.details === 'string' && item.details.includes('T') && item.details.includes(':');
+                    const isPlainDate = typeof item.details === 'string' && /\d{4}-\d{2}-\d{2}/.test(item.details) && !item.details.includes('T');
+                    
+                    if (isDateWithTime) {
+                        detailText = formatDateTime(item.details);
+                    } else if (isPlainDate) {
+                        detailText = new Date(item.details).toLocaleDateString('id-ID', { 
+                            weekday: 'long', 
+                            day: '2-digit', 
+                            month: 'short', 
+                            year: 'numeric' 
+                        });
+                    } else {
+                        detailText = item.details;
+                    }
+                }
+                
                 return (
                     <li key={index}>
                     <div className="relative">
@@ -81,7 +133,9 @@ export const TimelineStatus: React.FC<TimelineStatusProps> = ({ property, assetN
                                 <p className={`text-sm font-bold ${isInProgress ? 'text-orange-700' : isCompleted ? 'text-green-700' : 'text-gray-700'}`}>
                                     {item.step}
                                 </p>
-                                <p className="text-xs text-gray-600 mt-1">{item.details}</p>
+                                <p className="text-xs text-gray-600 mt-1">
+                                    {detailText}
+                                </p>
                                 {item.linkText && (
                                     <a href={item.linkUrl || "#"} className="text-xs text-rose-600 font-semibold hover:text-rose-800 transition mt-2 inline-block">
                                         {item.linkText} →
