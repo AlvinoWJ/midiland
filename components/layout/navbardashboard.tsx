@@ -18,13 +18,11 @@ export default function NavbarDashboard() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        {/* Logo */}
-        <Link href="/main/dashboard" className="text-xl font-bold">
+        <Link href="#" className="text-xl font-bold">
           <span className="text-primary">Midi</span>
           <span className="text-secondary">Land</span>
         </Link>
 
-        {/* Menu */}
         <nav className="hidden md:flex items-center gap-8">
           {menuItems.map((item) => (
             <Link
@@ -42,7 +40,6 @@ export default function NavbarDashboard() {
           ))}
         </nav>
 
-        {/* Profile menu */}
         <div className="flex items-center gap-4">
           <ProfileMenu />
         </div>

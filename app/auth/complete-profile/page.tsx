@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 
 export default function CompleteProfilePage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [form, setForm] = useState({
     nama: "",
@@ -20,36 +18,40 @@ export default function CompleteProfilePage() {
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchProfile = async () => {
       try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
+        const res = await fetch("/api/users_eksternal/profile", {
+          method: "GET",
+          // credentials include cookie session by default on same-origin
+        });
 
-        if (error || !user) {
+        if (res.status === 401) {
           router.replace("/auth/login");
           return;
         }
 
-        setForm((prev) => ({
-          ...prev,
-          email: user.email || "",
-          nama:
-            user.user_metadata?.full_name ||
-            user.user_metadata?.name ||
-            "",
-        }));
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err?.error || "Gagal memuat profil");
+        }
+
+        const data = await res.json();
+        setForm({
+          nama: data.nama || "",
+          email: data.email || "",
+          no_telp: data.no_telp || "",
+          alamat: data.alamat || "",
+        });
       } catch (err) {
-        console.error("Error fetching user:", err);
+        console.error("Error fetching profile:", err);
         toast.error("Gagal memuat data pengguna");
       } finally {
         setInitialLoading(false);
       }
     };
 
-    fetchUser();
-  }, [router, supabase]);
+    fetchProfile();
+  }, [router]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -63,26 +65,26 @@ export default function CompleteProfilePage() {
     setLoading(true);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nama: form.nama,
+          no_telp: form.no_telp,
+          alamat: form.alamat,
+        }),
+      });
 
-      if (!user) {
+      if (res.status === 401) {
         toast.error("Sesi login tidak valid");
         router.replace("/auth/login");
         return;
       }
 
-      const { error } = await supabase.from("users_eksternal").upsert({
-        id: user.id,
-        nama: form.nama.trim(),
-        email: form.email.trim(),
-        no_telp: form.no_telp.trim(),
-        alamat: form.alamat.trim(),
-        updated_at: new Date().toISOString(),
-      });
-
-      if (error) throw error;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error || "Gagal menyimpan data profil");
+      }
 
       toast.success("Profil berhasil dilengkapi!");
       router.replace("/dashboard");

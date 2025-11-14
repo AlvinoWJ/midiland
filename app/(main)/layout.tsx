@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import NavbarDashboard from "@/components/layout/navbardashboard";
 import Footer from "@/components/layout/Footer";
-// 💡 Gunakan import kurung kurawal (named import)
 import { ChatBotButton } from "@/components/chatbot/ChatBotButton"; 
 import { createClient } from "@/lib/supabase/client";
 
@@ -12,7 +11,6 @@ export default function MainAppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // 💡 Buat state untuk menampung nama dan avatar
   const [userData, setUserData] = useState<{ name?: string; avatar?: string }>({
     name: undefined,
     avatar: undefined,
@@ -29,13 +27,10 @@ export default function MainAppLayout({
       }
 
       if (data.user) {
-        const name =
-          data.user.user_metadata.full_name ||
-          data.user.email;
+        const name = data.user.user_metadata.full_name || data.user.email;
         const avatar =
-          data.user.user_metadata.avatar_url ||
-          data.user.user_metadata.picture;
-          
+          data.user.user_metadata.avatar_url || data.user.user_metadata.picture;
+
         setUserData({ name, avatar });
       }
     }
@@ -46,13 +41,10 @@ export default function MainAppLayout({
   return (
     <div className="relative flex-1 bg-gray-50 min-h-screen">
       <NavbarDashboard />
-      
-      {/* 💡 Kirim nama DAN avatar ke ChatBotButton */}
       <ChatBotButton
         userName={userData.name}
         userAvatar={userData.avatar}
       />
-      
       <div className="relative z-10">{children}</div>
       <Footer />
     </div>
