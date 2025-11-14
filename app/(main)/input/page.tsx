@@ -12,11 +12,14 @@ import {
   StoreIcon,
   User,
   Eye,
+  HelpCircle,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 const LocationPickerModal = dynamic(
-  () => import("@/components/map/LocationPickerModal"),
+  () => import("../../../components/map/LocationPickerModal"),
   { ssr: false }
 );
 
@@ -33,11 +36,11 @@ const formatNumber = (value: string): string => {
   if (!value) return "";
   const numberValue = parseInt(value.replace(/[^0-9]/g, ""), 10);
   if (isNaN(numberValue)) return "";
-  return numberValue.toLocaleString("id-ID"); // 'id-ID' pakai titik
+  return numberValue.toLocaleString("id-ID");
 };
 
 const unformatNumber = (value: string): string => {
-  return value.replace(/\./g, ""); // Hapus semua titik
+  return value.replace(/\./g, "");
 };
 
 export default function InputPage() {
@@ -77,7 +80,6 @@ export default function InputPage() {
 
   const [hargaSewaDisplay, setHargaSewaDisplay] = useState("");
   const [fotoLokasi, setFotoLokasi] = useState<File | null>(null);
-
   const fetchWilayahData = async (
     type: string,
     code: string | null,
@@ -187,12 +189,10 @@ export default function InputPage() {
       setFormData((prev) => ({ ...prev, [name]: rawValue }));
       setHargaSewaDisplay(formatNumber(rawValue));
     } else if (numericOnlyFields.includes(name)) {
-      const rawValue = value.replace(/[^0-9]/g, ""); // Hapus semua selain angka
+      const rawValue = value.replace(/[^0-9]/g, "");
       setFormData((prev) => ({ ...prev, [name]: rawValue }));
     }
-    // --- SPESIAL: Field Angka Desimal (e.g., 10.5) ---
     else if (decimalFields.includes(name)) {
-      // Hapus semua selain angka dan satu titik desimal
       const rawValue = value
         .replace(/[^0-9.]/g, "")
         .replace(/(\..*?)\..*/g, "$1");
@@ -202,7 +202,6 @@ export default function InputPage() {
     }
   };
 
-  // Handle perubahan input file
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFotoLokasi(e.target.files[0]);
@@ -293,29 +292,133 @@ export default function InputPage() {
 
       alert("Data berhasil disimpan!");
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Submit Error:", error);
-      alert(error.message);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert(String(error));
+      }
     } finally {
       setIsSubmitting(false);
     }
+  };
+  const startTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      popoverClass: "driverjs-theme",
+      steps: [
+        {
+          element: "#form-lokasi",
+          popover: {
+            title: "Data Usulan Lokasi",
+            description:
+              "Bagian ini untuk mengisi data alamat dan lokasi dari usulan Anda.",
+            side: "left",
+            align: "start",
+          },
+        },
+        {
+          element: "#select-provinsi",
+          popover: {
+            title: "Pemilihan Wilayah",
+            description:
+              "Pilih Provinsi, lalu Kabupaten, Kecamatan, dan Kelurahan. Pilihan akan muncul otomatis.",
+          },
+        },
+        {
+          element: "#input-latlong",
+          popover: {
+            title: "Koordinat Lokasi",
+            description:
+              "Masukkan koordinat (Latlong). Anda juga bisa klik ikon Peta untuk memilih lokasi dari map.",
+          },
+        },
+        {
+          element: "#upload-foto",
+          popover: {
+            title: "Foto Lokasi",
+            description: "Upload foto lokasi yang diusulkan. Ini wajib diisi.",
+          },
+        },
+        {
+          element: "#form-store",
+          popover: {
+            title: "Data Store",
+            description:
+              "Bagian ini mencakup detail properti seperti bentuk objek, ukuran, dan harga sewa.",
+            side: "left",
+            align: "start",
+          },
+        },
+        {
+          element: "#select-objek",
+          popover: {
+            title: "Bentuk Objek",
+            description:
+              "Pilih bentuk objek properti, apakah tanah atau bangunan.",
+          },
+        },
+        {
+          element: "#input-harga",
+          popover: {
+            title: "Harga Sewa",
+            description:
+              "Masukkan harga sewa. Format angka akan otomatis diatur.",
+          },
+        },
+        {
+          element: "#form-pemilik",
+          popover: {
+            title: "Data Pemilik",
+            description: "Informasi kontak pemilik properti.",
+            side: "left",
+            align: "start",
+          },
+        },
+        {
+          element: "#tombol-simpan",
+          popover: {
+            title: "Simpan Data",
+            description:
+              "Setelah semua data terisi, klik di sini untuk menyimpan usulan Anda.",
+            side: "top",
+            align: "end",
+          },
+        },
+      ],
+    });
+
+    driverObj.drive();
   };
 
   return (
     <main className="min-h-screen bg-gray-50 p-4 pb-20">
       <div className="max-w-6xl mx-auto">
-        {/* Bungkus semua dengan form agar bisa di-submit */}
         <form onSubmit={handleSubmit}>
-          {/* Data Usulan Lokasi */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden mt-4 shadow-[1px_1px_6px_rgba(0,0,0,0.25)]">
-            <div className="bg-red-600 text-white p-4 flex items-center gap-3">
-              <MapPin className="w-6 h-6" />
-              <h1 className="text-xl font-semibold">Data Usulan Lokasi</h1>
+          <div
+            id="form-lokasi"
+            className="bg-white rounded-lg shadow-md overflow-hidden mt-4 shadow-[1px_1px_6px_rgba(0,0,0,0.25)]"
+          >
+            <div className="bg-red-600 text-white p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <MapPin className="w-6 h-6" />
+                <h1 className="text-xl font-semibold">Data Usulan Lokasi</h1>
+              </div>
+              <button
+                type="button"
+                onClick={startTour}
+                className="bg-white text-red-600 px-3 py-1 rounded-md shadow-md flex items-center gap-2 hover:bg-red-50 transition-colors"
+                title="Mulai Tur Panduan"
+              >
+                <HelpCircle className="w-5 h-5" />
+                <span className="font-medium">Panduan</span>
+              </button>
             </div>
 
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div id="select-provinsi">
                   <WilayahSelect
                     label="Provinsi"
                     placeholder="Pilih Provinsi"
@@ -410,7 +513,7 @@ export default function InputPage() {
                   )}
                 </div>
 
-                <div>
+                <div id="input-latlong">
                   <label className="block text-md font-medium text-gray-700 mb-2">
                     Latlong <span className="text-red-600">*</span>
                   </label>
@@ -438,13 +541,13 @@ export default function InputPage() {
                   )}
                 </div>
               </div>
-              <div>
+
+              <div id="upload-foto">
                 <label className="block text-md font-medium text-gray-700 mb-2">
                   Foto Lokasi <span className="text-red-600">*</span>
                 </label>
 
                 {fotoLokasi ? (
-                  // File Info with Preview & Delete Button
                   <div className="w-full border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -484,7 +587,6 @@ export default function InputPage() {
                     </div>
                   </div>
                 ) : (
-                  // Upload Area
                   <div className="flex items-center justify-center w-full">
                     <label
                       htmlFor="dropzone-file"
@@ -519,8 +621,10 @@ export default function InputPage() {
             </div>
           </div>
 
-          {/* Data Store */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden mt-8 shadow-[1px_1px_6px_rgba(0,0,0,0.25)]">
+          <div
+            id="form-store"
+            className="bg-white rounded-lg shadow-md overflow-hidden mt-8 shadow-[1px_1px_6px_rgba(0,0,0,0.25)]"
+          >
             <div className="bg-red-600 text-white p-4 flex items-center gap-3">
               <StoreIcon className="w-6 h-6" />
               <h1 className="text-xl font-semibold">Data Store</h1>
@@ -528,7 +632,7 @@ export default function InputPage() {
 
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div id="select-objek">
                   <label className="block text-md font-medium text-gray-700 mb-2">
                     Bentuk Objek <span className="text-red-600">*</span>
                   </label>
@@ -649,7 +753,7 @@ export default function InputPage() {
                     <p className="text-sm text-red-600 mt-1">{errors.luas}</p>
                   )}
                 </div>
-                <div>
+                <div id="input-harga">
                   <label className="block text-md font-medium text-gray-700 mb-2">
                     Harga Sewa (+PPH 10%){" "}
                     <span className="text-red-600">*</span>
@@ -672,8 +776,10 @@ export default function InputPage() {
             </div>
           </div>
 
-          {/* Data Pemilik */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden mt-8 mb-8 shadow-[1px_1px_6px_rgba(0,0,0,0.25)]">
+          <div
+            id="form-pemilik"
+            className="bg-white rounded-lg shadow-md overflow-hidden mt-8 mb-8 shadow-[1px_1px_6px_rgba(0,0,0,0.25)]"
+          >
             <div className="bg-red-600 text-white p-4 flex items-center gap-3">
               <User className="w-6 h-6" />
               <h1 className="text-xl font-semibold">Data Pemilik</h1>
@@ -721,8 +827,7 @@ export default function InputPage() {
             </div>
           </div>
 
-          {/* Tombol Submit */}
-          <div className="flex justify-end mb-10">
+          <div id="tombol-simpan" className="flex justify-end mb-10">
             <button
               type="submit"
               disabled={isSubmitting}

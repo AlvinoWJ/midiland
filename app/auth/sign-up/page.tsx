@@ -1,4 +1,3 @@
-// app/auth/sign-up/page.tsx (Tanpa Email Confirmation)
 "use client";
 
 import Link from "next/link";
@@ -12,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpPage() {
-  // === State untuk Form ===
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,14 +20,10 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
-  // === State dan Ref untuk Google OAuth ===
   const supabase = useRef(createClient()).current;
   const isRedirecting = useRef(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
-
-  // === Logika Email/Password Sign Up (AUTO-LOGIN) ===
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -42,9 +36,6 @@ export default function SignUpPage() {
     }
     
     try {
-      // console.log("Attempting sign up with:", { email, name });
-      
-      // 1. Sign up user
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -54,37 +45,26 @@ export default function SignUpPage() {
       });
       
       if (signUpError) {
-        // console.error("Supabase signUp error:", signUpError);
         throw signUpError;
       }
 
-      // console.log("SignUp success, attempting auto-login...");
-
-      // 2. Auto-login setelah sign up
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (signInError) {
-        // console.error("Auto-login error:", signInError);
-        // Jika auto-login gagal (misal email confirmation masih ON di Supabase),
-        // redirect ke halaman login dengan pesan
         setError("Akun berhasil dibuat. Silakan login.");
         setTimeout(() => {
           router.push("/auth/login");
         }, 2000);
         return;
       }
-
-      // console.log("Auto-login success, redirecting to dashboard...");
       
-      // 3. Redirect ke dashboard
       router.push("/dashboard");
       router.refresh();
       
     } catch (error: unknown) {
-      // console.error("SignUp catch error:", error);
       setError(
         error instanceof Error
           ? error.message
@@ -95,7 +75,6 @@ export default function SignUpPage() {
     }
   };
 
-  // === Logika Google OAuth ===
   useEffect(() => {
     const safeRedirect = () => {
       if (isRedirecting.current) return;
@@ -167,10 +146,8 @@ export default function SignUpPage() {
     }
   };
 
-  // === JSX (Render) ===
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center p-4 md:p-10 bg-gray-100">
-      {/* Background Image */}
       <div className="absolute top-0 left-0 w-full h-1/2 z-0">
         <Image
           src="/signup.svg"
@@ -181,36 +158,56 @@ export default function SignUpPage() {
           aria-hidden="true"
         />
       </div>
-      
-      {/* Card Form */}
+    
       <div className="relative z-10 w-full max-w-4xl bg-white rounded-2xl shadow-xl p-8 md:p-12">
-        {/* Logo Alfamidi */}
-        <div className="absolute top-8 right-8 md:top-12 md:right-12">
-          <Image
-            src="/alfamidilogo.svg"
-            alt="Alfamidi Logo"
-            width={100}
-            height={33}
-          />
+        <div className="hidden md:flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">
+            Buat Akun <span className="text-primary">Midi</span>
+            <span className="text-secondary">Land</span>
+          </h1>
+          <div>
+            <Image
+              src="/alfamidilogo.svg"
+              alt="Alfamidi Logo"
+              width={100}
+              height={33}
+            />
+          </div>
         </div>
         
-        {/* Grid Konten Card */}
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          {/* Kolom Kiri: Form */}
           <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+            <div className="flex justify-center md:hidden mb-4">
+              <Image
+                src="/alfamidilogo.svg"
+                alt="Alfamidi Logo"
+                width={100}
+                height={33}
+              />
+            </div>
+
+            <h1 className="text-xl font-bold text-gray-800 text-center md:hidden">
               Buat Akun <span className="text-primary">Midi</span>
               <span className="text-secondary">Land</span>
             </h1>
 
+            <div className="flex justify-center md:hidden mb-6">
+              <Image
+                src="/alfamidi.svg"
+                alt="Ilustrasi Alfamidi"
+                width={350}
+                height={326}
+                className="w-full max-w-xs h-auto"
+              />
+            </div>
+
             <form onSubmit={handleSignUp} className="max-w-lg space-y-4">
-              {/* Nama */}
               <div className="grid gap-1">
                 <Label
                   htmlFor="name"
                   className="text-sm font-medium text-gray-600"
                 >
-                  Nama *
+                  Nama <span className="text-primary">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -218,18 +215,17 @@ export default function SignUpPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary"
+                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary text-sm"
                   disabled={isLoading || googleLoading}
                 />
               </div>
 
-              {/* Email */}
               <div className="grid gap-1">
                 <Label
                   htmlFor="email"
                   className="text-sm font-medium text-gray-600"
                 >
-                  Email *
+                  Email <span className="text-primary">*</span>
                 </Label>
                 <Input
                   id="email"
@@ -237,18 +233,17 @@ export default function SignUpPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary"
+                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary text-sm"
                   disabled={isLoading || googleLoading}
                 />
               </div>
 
-              {/* Buat Kata Sandi */}
               <div className="grid gap-1 relative">
                 <Label
                   htmlFor="password"
                   className="text-sm font-medium text-gray-600"
                 >
-                  Buat Kata Sandi *
+                  Buat Kata Sandi <span className="text-primary">*</span>
                 </Label>
                 <Input
                   id="password"
@@ -256,7 +251,7 @@ export default function SignUpPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary pr-10"
+                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary pr-10 text-sm"
                   disabled={isLoading || googleLoading}
                 />
                 <button
@@ -269,13 +264,12 @@ export default function SignUpPage() {
                 </button>
               </div>
 
-              {/* Konfirmasi Kata Sandi */}
               <div className="grid gap-1 relative">
                 <Label
                   htmlFor="repeat-password"
                   className="text-sm font-medium text-gray-600"
                 >
-                  Konfirmasi Kata Sandi Anda *
+                  Konfirmasi Kata Sandi Anda <span className="text-primary">*</span>
                 </Label>
                 <Input
                   id="repeat-password"
@@ -283,7 +277,7 @@ export default function SignUpPage() {
                   required
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
-                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary pr-10"
+                  className="rounded-md border-gray-300 focus:border-secondary focus:ring-secondary pr-10 text-sm"
                   disabled={isLoading || googleLoading}
                 />
                 <button
@@ -300,7 +294,6 @@ export default function SignUpPage() {
                 </button>
               </div>
 
-              {/* Error/Success Message */}
               {error && (
                 <p className={`text-xs text-center pt-2 ${
                   error.includes("berhasil") ? "text-green-600" : "text-red-500"
@@ -309,7 +302,6 @@ export default function SignUpPage() {
                 </p>
               )}
 
-              {/* Tombol Daftar */}
               <Button
                 type="submit"
                 className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-md transition-all duration-200"
@@ -319,7 +311,6 @@ export default function SignUpPage() {
               </Button>
             </form>
 
-            {/* Separator */}
             <div className="relative my-5">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-gray-300" />
@@ -331,12 +322,10 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            {/* Error Message Google */}
             {googleError && (
               <p className="text-xs text-red-500 text-center pt-2">{googleError}</p>
             )}
 
-            {/* Tombol Google */}
             <Button
               variant="outline"
               type="button"
@@ -358,7 +347,6 @@ export default function SignUpPage() {
               </span>
             </Button>
 
-            {/* Link ke Login */}
             <div className="mt-6 text-center text-sm text-gray-700">
               Sudah punya akun?{" "}
               <Link
@@ -370,7 +358,6 @@ export default function SignUpPage() {
             </div>
           </div>
 
-          {/* Kolom Kanan: Ilustrasi */}
           <div className="hidden md:flex justify-center items-center">
             <Image
               src="/alfamidi.svg"
