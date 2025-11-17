@@ -168,7 +168,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <section className="relative w-full overflow-hidden bg-white">
+      <section className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-5">
           <Image
             alt="Peta Indonesia Latar Belakang"
