@@ -71,6 +71,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = await createClient();
+  let objectPath: string | null = null;
+
   try {
     const contentType = req.headers.get("content-type") || "";
     if (!contentType.toLowerCase().includes("multipart/form-data")) {
@@ -84,7 +87,6 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const supabase = await createClient();
     const form = await req.formData();
     const body = parseCreateUlokEksternalFromFormData(form);
     const incomingFile = requireFotoFile(form);
@@ -92,7 +94,9 @@ export async function POST(req: NextRequest) {
     const ts = Date.now();
     const originalName = incomingFile.name || "file";
     const fileName = `${ts}_${safeFileName(originalName)}`;
-    const objectPath = `${id}/ulok_eksternal/${fileName}`; 
+
+    objectPath = `${id}/ulok_eksternal/${fileName}`;
+
     const { error: upErr } = await supabase.storage
       .from("file_storage_eksternal")
       .upload(objectPath, incomingFile, {
@@ -101,6 +105,7 @@ export async function POST(req: NextRequest) {
       });
 
     if (upErr) {
+      objectPath = null;
       return NextResponse.json(
         { error: `Gagal upload file: ${upErr.message}` },
         { status: 400 }
@@ -121,15 +126,38 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
-      await supabase.storage
-        .from("file_storage_eksternal")
-        .remove([objectPath])
-        .catch(() => {});
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      throw new Error(error.message);
+    }
+
+    const { error: notifError } = await supabase
+      .from("notifications_midiland")
+      .insert({
+        user_id: user.id,
+        ulok_eksternal_id: data.id,
+        title: "Usulan Berhasil Disimpan",
+        body: `Properti baru di ${
+          body.kabupaten || "lokasi baru"
+        }, ${body.provinsi || ""} telah dikirim.`,
+        type: "Usulan",
+      });
+
+    if (notifError) {
+      throw new Error(
+        `Gagal membuat notifikasi: ${notifError.message}`
+      );
     }
 
     return NextResponse.json({ data }, { status: 201 });
   } catch (e: unknown) {
+    if (objectPath) {
+      await supabase.storage
+        .from("file_storage_eksternal")
+        .remove([objectPath])
+        .catch((err) =>
+          console.error("Gagal melakukan rollback file:", err)
+        );
+    }
+
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Unknown error" },
       { status: 500 }
