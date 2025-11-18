@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import ChatWindow, { type ChatMessage } from "./ChatWindow";
 import { Button } from "@/components/ui/button";
 import { getInitialMessage } from "./utils";
@@ -25,20 +26,13 @@ const sendMessageToServer = (message: ChatMessage): Promise<void> => {
 };
 
 const ChatIcon = () => (
-  <svg
-    className="w-8 h-8 text-white"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 21l1.255-3.765A9.863 9.863 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-    />
-  </svg>
+  <Image
+    src="/chatbot.svg"
+    alt="Chat"
+    width={40}
+    height={40}
+    className="w-[40px] h-[40px]"
+  />
 );
 
 interface ChatBotButtonProps {
@@ -158,9 +152,9 @@ export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
   return (
     <>
       <Button
-        onClick={handleOpen}
+        onClick={() => (isOpen ? handleClose() : handleOpen())}
         className="fixed bottom-4 right-4 w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 shadow-2xl z-40 flex items-center justify-center"
-        aria-label="Buka Chat"
+        aria-label={isOpen ? "Tutup Chat" : "Buka Chat"}
       >
         <ChatIcon />
       </Button>
