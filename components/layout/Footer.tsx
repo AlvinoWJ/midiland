@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="font-bold text-2xl inline-block">
               <span className="text-primary">Midi</span>
-              <span className="text-white">Land</span>
+              <span className="text-secondary">Land</span>
             </Link>
             <p className="text-xs text-gray-400 leading-relaxed">
               Platform terpercaya untuk kemitraan properti dengan Alfamidi
