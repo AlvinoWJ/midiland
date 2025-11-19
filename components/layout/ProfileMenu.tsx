@@ -1,3 +1,5 @@
+// components/layout/ProfileMenu.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { LogoutButton } from "@/components/logout-button";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { History, LogOut, Settings, User as UserIcon, FilePlus } from "lucide-react";
 
 export function ProfileMenu() {
@@ -60,24 +62,23 @@ export function ProfileMenu() {
 
       <DropdownMenuContent
         align="end"
-        className="w-64 p-0 border-0 rounded-lg overflow-visible relative"
-        sideOffset={8}
+        alignOffset={0}
+        className="w-72 p-0 border-0 rounded-lg overflow-visible relative"
+        sideOffset={12}
         forceMount
       >
         <div className="shadow-lg rounded-lg relative border border-red-600">
           <div
-            className="absolute top-[-9px] right-4 w-4 h-4 transform rotate-45 z-30 bg-white border-t border-l border-red-600"
+            className="absolute top-[-9px] right-6 w-4 h-4 transform rotate-45 z-30 bg-white border-t border-l border-red-600"
           ></div>
 
-          <div className="flex items-center p-4 bg-white rounded-t-lg relative z-20 text-gray-900">
-            <div className="flex flex-col overflow-hidden">
-              <p className="text-sm font-semibold leading-none truncate">
-                {userName}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground mt-1 truncate">
-                {userEmail}
-              </p>
-            </div>
+          <div className="py-4 px-4 bg-white rounded-t-lg relative z-20 text-gray-900">
+            <p className="text-sm font-semibold leading-none">
+              {userName}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground mt-1 break-words">
+              {userEmail}
+            </p>
           </div>
 
           <div className="px-4 bg-white">

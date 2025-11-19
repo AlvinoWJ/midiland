@@ -86,13 +86,15 @@ export async function middleware(request: NextRequest) {
   const isMainAppRoute = mainAppRoutes.some((r) => pathname.startsWith(r));
   const isGuestRoute = guestRoutes.some((r) => pathname.startsWith(r));
   const isProfileRoute = pathname.startsWith(completeProfileRoute);
-
+  const isRootRoute = pathname === "/"; 
+  
   if (!session) {
     if (isMainAppRoute || isProfileRoute) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
     return response;
   }
+  
 
   const userId = session.user.id;
 
@@ -107,15 +109,14 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isProfileComplete) {
-    if (isGuestRoute || isProfileRoute) {
+    if (isGuestRoute || isProfileRoute || isRootRoute) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   } else {
-    if (isMainAppRoute || isGuestRoute) {
+    if (isMainAppRoute || isGuestRoute || isRootRoute) {
       return NextResponse.redirect(new URL(completeProfileRoute, request.url));
     }
   }
-
   return response;
 }
 
