@@ -30,14 +30,12 @@ interface ChatBotButtonProps {
 }
 
 export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
+  const [messages, setMessages] = useState<ChatMessage[]>(() => getInitialMessage(userName));
   const [isOpen, setIsOpen] = useState(false);
   const [isBotTyping, setIsBotTyping] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>(getInitialMessage(userName));
   const [draftMessage, setDraftMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
   const isCurrentlyConfirming = messages.some((msg) => msg.isConfirmation === true);
-
   const performSend = async (messageToSend: ChatMessage) => {
     setMessages((prev) => prev.map((m) => (m.id === messageToSend.id ? { ...m, status: "pending" } : m)));
     try {
@@ -81,6 +79,7 @@ export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
       id: crypto.randomUUID(),
       text,
       sender: "user",
+      name: userName, 
       avatar: userAvatar,
       timestamp: Date.now(),
       status: "pending",
