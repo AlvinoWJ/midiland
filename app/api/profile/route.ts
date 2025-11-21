@@ -4,8 +4,6 @@ import { upsertUsersEksternalSchema } from "@/lib/validation/users_eksternal";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-// GET: Ambil profil pengguna eksternal saat ini
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -25,8 +23,6 @@ export async function GET() {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
-
-    // Prefill nama dari DB atau fallback ke metadata auth
     const fallbackNama =
       (user.user_metadata?.full_name as string | undefined) ||
       (user.user_metadata?.name as string | undefined) ||
@@ -49,8 +45,6 @@ export async function GET() {
     );
   }
 }
-
-// POST: Upsert profil pengguna eksternal
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -86,7 +80,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from("users_eksternal").upsert({
       id: user.id,
       nama: nama.trim(),
-      email: (user.email ?? "").trim(), // email diambil dari auth, bukan dari client
+      email: (user.email ?? "").trim(),
       no_telp: no_telp.trim(),
       alamat: alamat.trim(),
       updated_at: new Date().toISOString(),

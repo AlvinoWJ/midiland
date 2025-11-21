@@ -1,11 +1,5 @@
 import { z } from "zod";
 
-/**
- * Schema untuk CREATE (required semua field non-file).
- * Catatan:
- * - foto_lokasi divalidasi di route sebagai File (wajib pada create).
- * - users_eksternal_id, branch_id, status_ulok_eksternal, penanggungjawab, approved_at diabaikan.
- */
 export const createUlokEksternalSchema = z.object({
   latitude: z
     .number({ error: "latitude harus number" })
@@ -18,7 +12,6 @@ export const createUlokEksternalSchema = z.object({
   kabupaten: z.string().min(1, "kabupaten wajib diisi"),
   provinsi: z.string().min(1, "provinsi wajib diisi"),
   alamat: z.string().min(1, "alamat wajib diisi"),
-  // Jika Anda punya enum bentuk_objek dari DB, bisa ganti z.string() menjadi z.enum([...])
   bentuk_objek: z.string().min(1, "bentuk_objek wajib diisi"),
   alas_hak: z.string().min(1, "alas_hak wajib diisi"),
   jumlah_lantai: z
@@ -31,9 +24,7 @@ export const createUlokEksternalSchema = z.object({
   panjang: z
     .number({ error: "panjang harus number" })
     .positive("panjang harus > 0"),
-  luas: z
-    .number({ error: "luas harus number" })
-    .positive("luas harus > 0"),
+  luas: z.number({ error: "luas harus number" }).positive("luas harus > 0"),
   harga_sewa: z
     .number({ error: "harga_sewa harus number" })
     .min(0, "harga_sewa minimal 0"),
@@ -45,10 +36,6 @@ export type CreateUlokEksternalInput = z.infer<
   typeof createUlokEksternalSchema
 >;
 
-/**
- * Schema untuk UPDATE (semua optional).
- * - foto_lokasi (file) tetap ditangani di route jika ada penggantian.
- */
 export const updateUlokEksternalSchema = z.object({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
@@ -72,9 +59,6 @@ export type UpdateUlokEksternalInput = z.infer<
   typeof updateUlokEksternalSchema
 >;
 
-/**
- * Helper untuk mengambil nilai number dari FormData.
- */
 function pickNumber(fd: FormData, key: string): number | undefined {
   const raw = fd.get(key);
   if (raw == null || raw === "") return undefined;
@@ -96,10 +80,6 @@ function pickString(fd: FormData, key: string): string | undefined {
   return v.length ? v : undefined;
 }
 
-/**
- * Parse + validate untuk CREATE dari FormData → object siap insert (tanpa foto_lokasi).
- * - Hanya field yang diizinkan yang diambil, field lain terabaikan.
- */
 export function parseCreateUlokEksternalFromFormData(
   fd: FormData
 ): CreateUlokEksternalInput {
@@ -132,10 +112,6 @@ export function parseCreateUlokEksternalFromFormData(
   return parsed.data;
 }
 
-/**
- * Parse + validate untuk UPDATE dari FormData → patch object siap update (tanpa foto_lokasi).
- * - Field optional; hanya yang ada di form yang akan dipakai.
- */
 export function parseUpdateUlokEksternalFromFormData(
   fd: FormData
 ): UpdateUlokEksternalInput & { updated_at?: string } {
@@ -158,7 +134,6 @@ export function parseUpdateUlokEksternalFromFormData(
     kontak_pemilik: pickString(fd, "kontak_pemilik"),
   };
 
-  // buang key undefined agar tidak meng-overwrite dengan null/undefined
   const compact: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(candidate)) {
     if (v !== undefined) compact[k] = v;
@@ -175,9 +150,6 @@ export function parseUpdateUlokEksternalFromFormData(
   return parsed.data;
 }
 
-/**
- * Validasi file untuk foto_lokasi pada CREATE/PATCH.
- */
 export function requireFotoFile(fd: FormData): File {
   const f =
     (fd.get("foto_lokasi") as File | null) || (fd.get("file") as File | null);

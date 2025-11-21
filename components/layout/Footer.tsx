@@ -1,4 +1,3 @@
-// File: components/layout/MainFooter.tsx
 import Link from "next/link";
 
 export default function Footer() {
@@ -6,11 +5,10 @@ export default function Footer() {
     <footer className="w-full bg-gray-900 text-gray-300 py-16">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-sm mb-8">
-          {/* Col 1 */}
           <div className="space-y-4">
             <Link href="/" className="font-bold text-2xl inline-block">
               <span className="text-primary">Midi</span>
-              <span className="text-white">Land</span>
+              <span className="text-secondary">Land</span>
             </Link>
             <p className="text-xs text-gray-400 leading-relaxed">
               Platform terpercaya untuk kemitraan properti dengan Alfamidi
@@ -41,7 +39,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2 */}
           <div className="space-y-3">
             <h5 className="font-bold text-white mb-4 text-base">Kontak</h5>
             <p className="text-sm">Alfamidi Tower</p>
@@ -51,7 +48,6 @@ export default function Footer() {
             <p className="text-sm">Telp: (021) 3199-5000</p>
           </div>
 
-          {/* Col 3 */}
           <div className="space-y-3">
             <h5 className="font-bold text-white mb-4 text-base">
               Jam Operasional
@@ -64,7 +60,6 @@ export default function Footer() {
             <p className="text-sm font-semibold text-gray-500">Tutup</p>
           </div>
 
-          {/* Col 4 */}
           <div className="space-y-3">
             <h5 className="font-bold text-white mb-4 text-base">Alfamidi</h5>
             <ul className="space-y-2">

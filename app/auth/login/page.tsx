@@ -1,5 +1,3 @@
-// app/auth/login/page.tsx
-
 "use client";
 
 import Link from "next/link";
@@ -10,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
 const carouselSlides = [
   {
@@ -43,6 +42,7 @@ export default function LoginPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const supabase = useRef(createClient()).current;
   const isRedirecting = useRef(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const nextSlide = () => {
     setCurrentSlide((prev) =>
@@ -123,7 +123,6 @@ export default function LoginPage() {
         password,
       });
       if (error) throw error;
-      // Redirect seperti biasa untuk login password
       router.push("/dashboard");
       router.refresh();
     } catch (error: unknown) {
@@ -141,7 +140,6 @@ export default function LoginPage() {
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          // redirectTo: `https://midiland.vercel.app/auth/callback`,
           queryParams: {
             prompt: "select_account",
           },
@@ -172,22 +170,31 @@ export default function LoginPage() {
     }
   };
 
-  // ... (SISA KODE JSX TIDAK SAYA UBAH) ...
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      {/* Kolom Kiri: Form Login */}
-      <div className="relative flex w-full md:w-1/2 flex-col justify-center items-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
-        <div className="w-full max-w-lg space-y-4">
-          <div className="flex justify-center text-left mb-3">
-            <h1 className="text-2xl font-bold text-gray-900">
+      <div className="relative flex w-full lg:w-1/2 flex-col items-center md:justify-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
+        <div className="w-full max-w-lg space-y-4 pt-8 md:pt-0"> 
+          <div className="flex justify-center mb-3 lg:hidden">
+            <Image
+              src="/alfamidilogo.svg"
+              alt="Alfamidi Logo"
+              width={100}
+              height={40}
+              className="object-contain md:w-[150px]"
+              priority
+            />
+          </div>
+
+          <div className="flex justify-center text-center lg:text-left mb-3">
+            <h1 className="text-xl font-bold text-gray-900">
               Masuk ke <span className="text-secondary">Midi</span>
               <span className="text-primary">Land</span>
             </h1>
           </div>
-          {/* Gambar tambahan di atas teks “Masuk ke MidiLand” */}
+
           <div className="flex justify-center mb-3">
             <Image
-              src="/alfamidi.svg" // ganti nama file kamu jadi ini di folder public
+              src="/alfamidi.svg"
               alt="Header Gambar"
               width={350}
               height={250}
@@ -196,7 +203,6 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleLogin} className="space-y-3">
             <div className="space-y-1">
               <Label
@@ -208,7 +214,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="email@contoh.com"
+                placeholder="Masukkan alamat email Anda"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -231,14 +237,33 @@ export default function LoginPage() {
                   Lupa Kata Sandi?
                 </Link>
               </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Masukkan kata sandi Anda"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-10 border-gray-300 rounded-lg focus:border-secondary focus:ring-secondary text-sm pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center justify-center h-full w-10 text-gray-500 hover:text-gray-700"
+                  aria-label={
+                    showPassword
+                      ? "Sembunyikan kata sandi"
+                      : "Tampilkan kata sandi"
+                  }
+                >
+                  {showPassword ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {error && (
@@ -256,7 +281,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Separator */}
           <div className="relative my-3">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-gray-300" />
@@ -268,7 +292,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Google Sign In */}
           <Button
             variant="outline"
             className="w-full h-10 flex items-center justify-center gap-2 border-gray-300 hover:border-none rounded-lg font-medium text-sm"
@@ -279,8 +302,7 @@ export default function LoginPage() {
             {isLoading ? "Mengarahkan..." : "Masuk dengan Google"}
           </Button>
 
-          {/* Sign Up Link */}
-          <div className="text-center text-xs text-gray-700 pt-1">
+          <div className="text-center text-xs text-gray-700 pt-1 pb-8 md:pb-0">
             Belum punya akun?{" "}
             <Link
               href="/auth/sign-up"
@@ -292,8 +314,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Kolom Kanan: Carousel */}
-      <div className="hidden md:flex md:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/login.svg"
@@ -304,7 +325,7 @@ export default function LoginPage() {
             priority
           />
         </div>
-        {/* Logo Alfamidi di pojok kanan atas */}
+        
         <div className="absolute top-6 right-6">
           <div className="border-2 border-white rounded-xl p-2 bg-white shadow-md">
             <Image
