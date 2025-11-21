@@ -19,7 +19,7 @@ export function getInitialMessage(userName?: string): ChatMessage[] {
     text: dynamicGreetingText,
     sender: 'bot',
     name: 'MidiLand Assisten',
-    avatar: '/MidiLand.png',
+    avatar: '/chatbot.png',
     timestamp: initialTimestamp,
   };
   
@@ -28,7 +28,7 @@ export function getInitialMessage(userName?: string): ChatMessage[] {
     text: "Halo! Perkenalkan Saya MidiLand Assisten, asisten virtual yang siap membantu Anda!",
     sender: 'bot',
     name: 'MidiLand Assisten',
-    avatar: '/MidiLand.png',
+    avatar: '/chatbot.png',
     timestamp: initialTimestamp,
   };
   return [greetingMessage, introMessage];
