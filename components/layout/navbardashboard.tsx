@@ -203,7 +203,7 @@ function NotificationBell() {
       >
         <div className="shadow-lg rounded-lg relative">
           <div
-            className="absolute -top-2 right-4 w-4 h-4 transform rotate-45 z-30"
+            className="absolute -top-2 right-3 w-4 h-4 transform rotate-45 z-30"
             style={{ backgroundColor: "#DC2626" }}
           ></div>
 
@@ -382,8 +382,8 @@ export default function NavbarDashboard() {
           href="/dashboard"
           className="text-xl font-bold hover:opacity-80 transition-opacity"
         >
-          <span className="text-red-600">Midi</span>
-          <span className="text-red-600">Land</span>
+          <span className="text-primary">Midi</span>
+          <span className="text-secondary">Land</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import ForgotPasswordForm from "@/components/forgot-password-form";
+import ForgotPasswordForm from "@/components/auth/forgot-password-form";
 
 const carouselSlides = [
   {
