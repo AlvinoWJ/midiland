@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import ChatWindow, { type ChatMessage } from "./ChatWindow";
-import { Button } from "@/components/ui/button";
 import { getInitialMessage } from "./utils";
 import { getBotResponse } from "./chatLogic";
 
@@ -11,7 +10,7 @@ const SIMULATE_FAILURE = false;
 
 const sendMessageToServer = (message: ChatMessage): Promise<void> => {
   console.log("Attempting to send message:", message.id);
-  
+
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (SIMULATE_FAILURE || !navigator.onLine) {
@@ -25,16 +24,6 @@ const sendMessageToServer = (message: ChatMessage): Promise<void> => {
   });
 };
 
-const ChatIcon = () => (
-  <Image
-    src="/chatbot.svg"
-    alt="Chat"
-    width={40}
-    height={40}
-    className="w-[40px] h-[40px]"
-  />
-);
-
 interface ChatBotButtonProps {
   userName?: string;
   userAvatar?: string;
@@ -43,68 +32,54 @@ interface ChatBotButtonProps {
 export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isBotTyping, setIsBotTyping] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>(
-    getInitialMessage(userName)
-  );
+  const [messages, setMessages] = useState<ChatMessage[]>(getInitialMessage(userName));
   const [draftMessage, setDraftMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  const isCurrentlyConfirming = messages.some(msg => msg.isConfirmation === true);
-
+  const isCurrentlyConfirming = messages.some((msg) => msg.isConfirmation === true);
 
   const performSend = async (messageToSend: ChatMessage) => {
-    setMessages(prev => prev.map(m => 
-        m.id === messageToSend.id ? { ...m, status: "pending" } : m
-    ));
+    setMessages((prev) => prev.map((m) => (m.id === messageToSend.id ? { ...m, status: "pending" } : m)));
     try {
       await sendMessageToServer(messageToSend);
-
-      setMessages(prev => prev.map(m => 
-          m.id === messageToSend.id ? { ...m, status: "sent" } : m
-      ));
-
+      setMessages((prev) => prev.map((m) => (m.id === messageToSend.id ? { ...m, status: "sent" } : m)));
       setIsBotTyping(true);
 
       setTimeout(() => {
-        const botText = getBotResponse(messageToSend.text); 
+        const botText = getBotResponse(messageToSend.text);
         const botResponse: ChatMessage = {
           id: crypto.randomUUID(),
-          text: botText, 
+          text: botText,
           sender: "bot",
           name: "MidiLand Assisten",
-          avatar: "/MidiLand.png",
+          avatar: "/chatbot.png",
           timestamp: Date.now(),
           isConfirmation: false,
         };
 
         setMessages((prevMessages) => [
-          ...prevMessages.map((msg) =>
-            msg.id === messageToSend.id ? { ...msg, status: "read" as const } : msg
-          ),
+          ...prevMessages.map((msg) => (msg.id === messageToSend.id ? { ...msg, status: "read" as const } : msg)),
           botResponse,
         ]);
 
         setIsBotTyping(false);
       }, 2000);
-
     } catch (error) {
       console.error(error);
       setIsBotTyping(false);
-      setMessages(prev => prev.map(m => 
-          m.id === messageToSend.id ? { ...m, status: "failed" } : m
-      ));
+      setMessages((prev) => prev.map((m) => (m.id === messageToSend.id ? { ...m, status: "failed" } : m)));
     }
   };
 
   const handleSend = (text: string) => {
     if (isCurrentlyConfirming) return;
 
-    setDraftMessage(""); 
+    setDraftMessage("");
     setShowEmojiPicker(false);
 
     const newMessage: ChatMessage = {
       id: crypto.randomUUID(),
-      text: text,
+      text,
       sender: "user",
       avatar: userAvatar,
       timestamp: Date.now(),
@@ -117,7 +92,7 @@ export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
   };
 
   const handleRetrySend = (messageId: string) => {
-    const messageToRetry = messages.find(m => m.id === messageId);
+    const messageToRetry = messages.find((m) => m.id === messageId);
     if (messageToRetry) {
       performSend(messageToRetry);
     }
@@ -126,18 +101,23 @@ export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
   const handleClose = () => {
     setIsOpen(false);
     setShowEmojiPicker(false);
-    setMessages(prev => prev.filter(msg => !msg.isConfirmation));
+    setMessages((prev) => prev.filter((msg) => !msg.isConfirmation));
   };
+
   const handleOpen = () => setIsOpen(true);
 
   const handlePromptEndSession = () => {
     if (isCurrentlyConfirming) return;
     const confirmMessage: ChatMessage = {
-      id: 'confirm-delete-prompt',
-      text: '', sender: 'bot', name: '', avatar: '',
-      timestamp: Date.now(), isConfirmation: true,
+      id: "confirm-delete-prompt",
+      text: "",
+      sender: "bot",
+      name: "",
+      avatar: "",
+      timestamp: Date.now(),
+      isConfirmation: true,
     };
-    setMessages(prev => [...prev, confirmMessage]);
+    setMessages((prev) => [...prev, confirmMessage]);
   };
 
   const handleConfirmEndSession = () => {
@@ -146,18 +126,47 @@ export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
   };
 
   const handleCancelEndSession = () => {
-    setMessages(prev => prev.filter(msg => !msg.isConfirmation));
+    setMessages((prev) => prev.filter((msg) => !msg.isConfirmation));
   };
 
   return (
     <>
-      <Button
+      <button
         onClick={() => (isOpen ? handleClose() : handleOpen())}
-        className="fixed bottom-4 right-4 w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 shadow-2xl z-40 flex items-center justify-center"
+        className="fixed bottom-4 right-4 z-40 flex items-center cursor-pointer group"
         aria-label={isOpen ? "Tutup Chat" : "Buka Chat"}
       >
-        <ChatIcon />
-      </Button>
+        <div className="relative w-20 h-20 flex-shrink-0 z-20">
+          <div className="absolute inset-0 rounded-full bg-white shadow-lg overflow-hidden border-2 border-gray-100">
+            <Image src="/chatbot.png" alt="Milan Assistant" fill className="object-cover object-top" />
+          </div>
+        </div>
+
+        <div className="relative ml-[-25px] z-10">
+          <div className="relative">
+            <div
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[6px] w-0 h-0"
+              style={{ borderTop: "8px solid transparent", borderBottom: "8px solid transparent", borderRight: "8px solid #e4002b" }}
+            />
+
+            <div className="bg-[#e4002b] rounded-2xl px-6 py-2.5 shadow-lg min-w-[190px]">
+              <p className="text-white text-[12px] leading-tight">Merasa tersesat?</p>
+              <p className="text-white font-bold text-[14px] leading-tight">Yuk #TanyaMilan!</p>
+            </div>
+          </div>
+          
+          <div className="absolute -top-5 -right-3 z-30">
+            <div className="relative w-10 h-10">
+              <Image
+                src="/chatbot-floating.svg" 
+                alt="New message notification" 
+                fill
+                className="object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      </button>
 
       {isOpen && (
         <ChatWindow
