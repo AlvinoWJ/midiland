@@ -1,24 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import {
-  Handshake,
-  TrendingUp,
-  Zap,
-  UserPlus,
-  ClipboardCheck,
-  HomeIcon,
-  Mail,
-  MessageCircle,
-  Phone,
-  ChevronDown,
-  ArrowRight,
-} from "lucide-react";
-import Footer from "@/components/layout/Footer";
-import NavbarLanding from "@/components/layout/navbarlanding";
-import { ChatBotButton } from "@/components/chatbot/ChatBotButton";
+import Footer from "../components/layout/Footer";
+import NavbarLanding from "../components/layout/navbarlanding";
+import { ChatBotButton } from "../components/chatbot/ChatBotButton";
+import HeroSection from "../components/landing/HeroSection";
+import KeyMetricsSection from "../components/landing/KeyMetricsSection";
+import BenefitsSection from "../components/landing/BenefitsSection";
+import ProcessSection from "../components/landing/ProcessSection";
+import FaqAndContactSection from "../components/landing/FaqAndContactSection";
+import CTASection from "../components/landing/CTASection";
 
 export default function Home() {
   return (
