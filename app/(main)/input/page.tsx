@@ -24,6 +24,15 @@ const LocationPickerModal = dynamic(
   { ssr: false }
 );
 
+const MAX_ALAMAT = 255;
+const MAX_LATLONG = 50;
+const MAX_ALAS_HAK = 50;
+const MAX_LANTAI = 3; 
+const MAX_DIMENSI = 10; 
+const MAX_HARGA = 20; 
+const MAX_NAMA = 50;
+const MAX_KONTAK = 15;
+
 interface WilayahItem {
   code: string;
   name: string;
@@ -45,6 +54,7 @@ const formatNumber = (value: string): string => {
   return numberValue.toLocaleString("id-ID");
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const unformatNumber = (value: string): string => {
   return value.replace(/\./g, "");
 };
@@ -174,24 +184,13 @@ export default function InputPage() {
     }
   };
 
-  useEffect(() => {
-    const panjang = parseFloat(formData.panjang);
-    const lebar = parseFloat(formData.lebar_depan);
-
-    if (!isNaN(panjang) && !isNaN(lebar) && panjang > 0 && lebar > 0) {
-      const calculatedLuas = (panjang * lebar).toString();
-      setFormData((prev) => ({ ...prev, luas: calculatedLuas }));
-    } else {
-      setFormData((prev) => ({ ...prev, luas: "" }));
-    }
-  }, [formData.panjang, formData.lebar_depan]);
-
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     const numericOnlyFields = ["jumlah_lantai", "kontak_pemilik"];
-    const decimalFields = ["lebar_depan", "panjang"];
+    const decimalFields = ["lebar_depan", "panjang", "luas"];
+    const textOnlyFields = ["alas_hak", "nama_pemilik"];
 
     if (name === "harga_sewa") {
       const rawValue = value.replace(/[^0-9]/g, "");
@@ -205,6 +204,9 @@ export default function InputPage() {
       const rawValue = value
         .replace(/[^0-9.]/g, "")
         .replace(/(\..*?)\..*/g, "$1");
+      setFormData((prev) => ({ ...prev, [name]: rawValue }));
+    } else if (textOnlyFields.includes(name)) {
+      const rawValue = value.replace(/[^a-zA-Z\s]/g, "");
       setFormData((prev) => ({ ...prev, [name]: rawValue }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -421,6 +423,23 @@ export default function InputPage() {
     driverObj.drive();
   };
 
+  const renderCounter = (currentLength: number, maxLength: number, label: string = "karakter") => (
+    <div className="flex justify-between items-start gap-2 mt-1">
+      <span className="text-xs text-red-600 font-medium text-left">
+        {currentLength >= maxLength && "Batas maksimal tercapai"}
+      </span>
+      <span
+        className={`text-xs whitespace-nowrap flex-shrink-0 ${
+          currentLength >= maxLength
+            ? "text-red-600 font-medium"
+            : "text-gray-500"
+        }`}
+      >
+        {currentLength}/{maxLength} {label}
+      </span>
+    </div>
+  );
+
   return (
     <>
       {notification && (
@@ -544,6 +563,7 @@ export default function InputPage() {
                     )}
                   </div>
                 </div>
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-md font-medium text-gray-700 mb-2">
@@ -556,7 +576,9 @@ export default function InputPage() {
                       onChange={handleInputChange}
                       placeholder="Masukkan alamat"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_ALAMAT}
                     />
+                    {renderCounter(formData.alamat.length, MAX_ALAMAT)}
                     {errors.alamat && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.alamat}
@@ -576,6 +598,7 @@ export default function InputPage() {
                         onChange={handleInputChange}
                         placeholder="Masukkan latlong"
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent pr-10"
+                        maxLength={MAX_LATLONG}
                       />
                       <button
                         type="button"
@@ -585,6 +608,7 @@ export default function InputPage() {
                         <MapPin className="w-5 h-5" />
                       </button>
                     </div>
+                    {renderCounter(formData.latlong.length, MAX_LATLONG)}
                     {errors.latlong && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.latlong}
@@ -724,13 +748,16 @@ export default function InputPage() {
                       onChange={handleInputChange}
                       placeholder="Masukkan alas hak"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_ALAS_HAK}
                     />
+                    {renderCounter(formData.alas_hak.length, MAX_ALAS_HAK)}
                     {errors.alas_hak && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.alas_hak}
                       </p>
                     )}
                   </div>
+                  
                   <div>
                     <label className="block text-md font-medium text-gray-700 mb-2">
                       Jumlah Lantai <span className="text-red-600">*</span>
@@ -742,13 +769,16 @@ export default function InputPage() {
                       onChange={handleInputChange}
                       placeholder="Masukkan jumlah lantai"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_LANTAI}
                     />
+                    {renderCounter(formData.jumlah_lantai.length, MAX_LANTAI, "digit")}
                     {errors.jumlah_lantai && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.jumlah_lantai}
                       </p>
                     )}
                   </div>
+
                   <div>
                     <label className="block text-md font-medium text-gray-700 mb-2">
                       Lebar Depan (m) <span className="text-red-600">*</span>
@@ -761,13 +791,16 @@ export default function InputPage() {
                       onChange={handleInputChange}
                       placeholder="Masukkan lebar depan"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_DIMENSI}
                     />
+                    {renderCounter(formData.lebar_depan.length, MAX_DIMENSI)}
                     {errors.lebar_depan && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.lebar_depan}
                       </p>
                     )}
                   </div>
+
                   <div>
                     <label className="block text-md font-medium text-gray-700 mb-2">
                       Panjang (m) <span className="text-red-600">*</span>
@@ -780,30 +813,36 @@ export default function InputPage() {
                       onChange={handleInputChange}
                       placeholder="Masukkan panjang"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_DIMENSI}
                     />
+                    {renderCounter(formData.panjang.length, MAX_DIMENSI)}
                     {errors.panjang && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.panjang}
                       </p>
                     )}
                   </div>
+                  
                   <div>
                     <label className="block text-md font-medium text-gray-700 mb-2">
                       Luas (m²) <span className="text-red-600">*</span>
                     </label>
                     <input
-                      type="number"
+                      type="text"
                       step="0.01"
                       name="luas"
                       value={formData.luas}
                       onChange={handleInputChange}
                       placeholder="Masukkan luas"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_DIMENSI}
                     />
+                    {renderCounter(formData.luas.length, MAX_DIMENSI)}
                     {errors.luas && (
                       <p className="text-sm text-red-600 mt-1">{errors.luas}</p>
                     )}
                   </div>
+
                   <div id="input-harga">
                     <label className="block text-md font-medium text-gray-700 mb-2">
                       Harga Sewa (+PPH 10%){" "}
@@ -816,7 +855,9 @@ export default function InputPage() {
                       onChange={handleInputChange}
                       placeholder="Masukkan harga sewa"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_HARGA}
                     />
+                    {renderCounter(hargaSewaDisplay.length, MAX_HARGA)}
                     {errors.harga_sewa && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.harga_sewa}
@@ -838,6 +879,7 @@ export default function InputPage() {
 
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
                   <div>
                     <label className="block text-md font-medium text-gray-700 mb-2">
                       Nama Pemilik <span className="text-red-600">*</span>
@@ -849,25 +891,30 @@ export default function InputPage() {
                       onChange={handleInputChange}
                       placeholder="Masukkan nama pemilik"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_NAMA}
                     />
+                    {renderCounter(formData.nama_pemilik.length, MAX_NAMA)}
                     {errors.nama_pemilik && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.nama_pemilik}
                       </p>
                     )}
                   </div>
+
                   <div>
                     <label className="block text-md font-medium text-gray-700 mb-2">
                       Kontak Pemilik <span className="text-red-600">*</span>
                     </label>
                     <input
-                      type="text"
+                      type="tel"
                       name="kontak_pemilik"
                       value={formData.kontak_pemilik}
                       onChange={handleInputChange}
                       placeholder="Masukkan kontak pemilik"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      maxLength={MAX_KONTAK}
                     />
+                    {renderCounter(formData.kontak_pemilik.length, MAX_KONTAK, "digit")}
                     {errors.kontak_pemilik && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.kontak_pemilik}
