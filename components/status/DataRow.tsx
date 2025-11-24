@@ -123,7 +123,7 @@ export const DataRow: React.FC<DataRowProps> = ({
             )}
           </div>
         ) : (
-          <p className="text-sm font-semibold text-gray-800 truncate">
+          <p className="text-sm font-semibold text-gray-800 break-words whitespace-normal leading-relaxed">
             {displayValue}
             {displayUnit}
           </p>
