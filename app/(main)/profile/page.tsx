@@ -19,6 +19,10 @@ import {
   MapPin,
 } from "lucide-react";
 
+const MAX_LENGTH_NAMA = 50;
+const MAX_LENGTH_TELP = 15;
+const MAX_LENGTH_ALAMAT = 255;
+
 interface UserProfile {
   id: string;
   nama: string;
@@ -158,25 +162,30 @@ export default function ProfilePage() {
       </Card>
     );
 
+  const namaLength = (profile.nama === "-" ? "" : profile.nama).length;
+  const telpLength = (profile.no_telp || "").length;
+  const alamatLength = (profile.alamat || "").length;
+
   return (
     <Card>
       <CardContent className="p-6">
         <div className="space-y-6">
-          <div className="flex flex-col items-center gap-4 border-b pb-4">
+          <div className="flex flex-col items-center gap-4 border-b pb-4 w-full">
             <Avatar className="h-20 w-20">
               <AvatarImage src={userAvatar} />
               <AvatarFallback>{avatarFallback}</AvatarFallback>
             </Avatar>
 
-            <div className="text-center">
-              <h2 className="text-xl font-semibold">{userName}</h2>
-              <p className="text-muted-foreground text-sm break-words">
+            <div className="text-center w-full px-2">
+              <h2 className="text-xl font-semibold break-words w-full">
+                {userName}
+              </h2>
+              <p className="text-muted-foreground text-sm break-all">
                 {profile.email}
               </p>
             </div>
           </div>
 
-          {/* ALERT */}
           {saveMessage && (
             <Alert
               type={saveMessage.type}
@@ -204,7 +213,22 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setProfile({ ...profile, nama: e.target.value })
                 }
+                maxLength={MAX_LENGTH_NAMA}
               />
+              <div className="flex justify-between items-start gap-2">
+                <span className="text-xs text-red-500 font-medium text-left">
+                  {namaLength === MAX_LENGTH_NAMA && "Batas maksimal tercapai"}
+                </span>
+                <span
+                  className={`text-xs whitespace-nowrap flex-shrink-0 ${
+                    namaLength === MAX_LENGTH_NAMA
+                      ? "text-red-500 font-medium"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {namaLength}/{MAX_LENGTH_NAMA} karakter
+                </span>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -221,11 +245,29 @@ export default function ProfilePage() {
                 No Telp
               </Label>
               <Input
+                type="tel"
                 value={profile.no_telp || ""}
-                onChange={(e) =>
-                  setProfile({ ...profile, no_telp: e.target.value })
-                }
+                onChange={(e) => {
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                  setProfile({ ...profile, no_telp: numericValue });
+                }}
+                placeholder="Contoh: 081234567890"
+                maxLength={MAX_LENGTH_TELP}
               />
+              <div className="flex justify-between items-start gap-2">
+                <span className="text-xs text-red-500 font-medium text-left">
+                  {telpLength === MAX_LENGTH_TELP && "Batas maksimal tercapai"}
+                </span>
+                <span
+                  className={`text-xs whitespace-nowrap flex-shrink-0 ${
+                    telpLength === MAX_LENGTH_TELP
+                      ? "text-red-500 font-medium"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {telpLength}/{MAX_LENGTH_TELP} digit
+                </span>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -238,7 +280,23 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setProfile({ ...profile, alamat: e.target.value })
                 }
+                maxLength={MAX_LENGTH_ALAMAT}
               />
+              <div className="flex justify-between items-start gap-2">
+                <span className="text-xs text-red-500 font-medium text-left">
+                  {alamatLength === MAX_LENGTH_ALAMAT &&
+                    "Batas maksimal tercapai"}
+                </span>
+                <span
+                  className={`text-xs whitespace-nowrap flex-shrink-0 ${
+                    alamatLength === MAX_LENGTH_ALAMAT
+                      ? "text-red-500 font-medium"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {alamatLength}/{MAX_LENGTH_ALAMAT} karakter
+                </span>
+              </div>
             </div>
           </div>
 
