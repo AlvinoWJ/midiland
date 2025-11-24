@@ -84,7 +84,9 @@ export const TimelineStatus: React.FC<TimelineStatusProps> = ({ property, assetN
         <div className="flow-root">
             <div className="mb-6 p-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-200">
                 <p className="text-xs font-medium text-gray-600">Aset Terpilih</p>
-                <p className="text-sm font-bold text-gray-800 mt-1">{assetName}</p>
+                <p className="text-sm font-bold text-gray-800 mt-1 break-all whitespace-normal">
+                    {assetName}
+                </p>
             </div>
             <ul role="list" className="space-y-6">
                 {currentTimeline.map((item, index) => {
@@ -133,7 +135,7 @@ export const TimelineStatus: React.FC<TimelineStatusProps> = ({ property, assetN
                                 <p className={`text-sm font-bold ${isInProgress ? 'text-orange-700' : isCompleted ? 'text-green-700' : 'text-gray-700'}`}>
                                     {item.step}
                                 </p>
-                                <p className="text-xs text-gray-600 mt-1">
+                                <p className="text-xs text-gray-600 mt-1 break-words">
                                     {detailText}
                                 </p>
                                 {item.linkText && (
