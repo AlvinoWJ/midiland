@@ -1,5 +1,3 @@
-// components/layout/ProfileMenu.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -63,13 +61,13 @@ export function ProfileMenu() {
       <DropdownMenuContent
         align="end"
         alignOffset={0}
-        className="w-72 p-0 border-0 rounded-lg overflow-visible relative"
-        sideOffset={12}
+        className="w-[87vw] sm:w-72 ml-6 mr-5 sm:mr-0 p-0 border-0 rounded-lg overflow-visible relative"
+        sideOffset={8}
         forceMount
       >
         <div className="shadow-lg rounded-lg relative border border-red-600">
           <div
-            className="absolute top-[-9px] right-6 w-4 h-4 transform rotate-45 z-30 bg-white border-t border-l border-red-600"
+            className="absolute top-[-9px] right-[8px] sm:right-[10px] w-4 h-4 transform rotate-45 z-30 bg-white border-t border-l border-red-600"
           ></div>
 
           <div className="py-4 px-4 bg-white rounded-t-lg relative z-20 text-gray-900">

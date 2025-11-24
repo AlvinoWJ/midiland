@@ -58,16 +58,17 @@ export default function DashboardWithAccordion() {
     const element = document.getElementById(`accordion-${accordionId}`);
     if (!element) return;
 
-    const FIXED_TOP_OFFSET = 80; 
+    const FIXED_TOP_OFFSET = 80;
 
     requestAnimationFrame(() => {
-        const elemRect = element.getBoundingClientRect();
-        const targetScrollY = window.scrollY + elemRect.top - FIXED_TOP_OFFSET + 4;
+      const elemRect = element.getBoundingClientRect();
+      const targetScrollY =
+        window.scrollY + elemRect.top - FIXED_TOP_OFFSET + 4;
 
-        window.scrollTo({
-          top: targetScrollY,
-          behavior: "smooth",
-        });
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: "smooth",
+      });
     });
   };
 
@@ -153,22 +154,22 @@ export default function DashboardWithAccordion() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-4 md:p-8">
       <div className="w-full max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
+        <div className="mb-8 px-1">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
             Status Property
           </h1>
-          <p className="text-gray-600 font-medium">
+          <p className="text-sm md:text-base text-gray-600 font-medium">
             Kelola dan pantau usulan lokasi Anda secara real-time
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
           <KPICard title="Total Aset Terdaftar" value={total} Icon={List} color="text-indigo-600" />
           <KPICard title="Pengajuan Aktif" value={pending} Icon={Clock} color="text-amber-600" />
           <KPICard title="Aset Aktif Disewa" value={rented} Icon={CheckCircle} color="text-green-600" />
         </div>
 
-        <div className="p-6 bg-white rounded-2xl shadow-lg border border-gray-100 mb-8">
+        <div className="p-4 md:p-6 bg-white rounded-2xl shadow-lg border border-gray-100 mb-8">
           <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
             <Calendar className="w-5 h-5 mr-2 text-rose-500" />
             Aset Terbaru
@@ -179,45 +180,37 @@ export default function DashboardWithAccordion() {
               return (
                 <div
                   key={p.id}
-                  className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl hover:from-rose-50 hover:to-pink-50 transition-all cursor-pointer border border-gray-200 hover:border-rose-300 hover:shadow-md"
+                  className="flex flex-col-reverse sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl hover:from-rose-50 hover:to-pink-50 transition-all cursor-pointer border border-gray-200 hover:border-rose-300 hover:shadow-md gap-3 sm:gap-4"
                   onClick={() => handleRecentClick(p.id)}
                 >
-                  <div className="flex items-center space-x-3 min-w-0 flex-1">
-                    <AssetIcon className="w-5 h-5 text-rose-500 flex-shrink-0" />
-                    <div className="min-w-0 truncate">
+                  <div className="flex items-start space-x-3 min-w-0 flex-1">
+                    <AssetIcon className="w-5 h-5 text-rose-500 flex-shrink-0 mt-1" />
+                    <div className="min-w-0 w-full">
                       <p className="text-xs text-gray-500 mb-0.5 flex items-center">
                         <Clock className="w-3 h-3 inline mr-1 text-gray-400" />
                         {formatFullDateTime(p.created_at)}
                       </p>
-                      <p className="font-bold text-gray-900 truncate">{p.alamat}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-bold text-gray-900 break-all whitespace-normal leading-tight mb-1">
+                        {p.alamat}
+                      </p>
+                      <p className="text-xs text-gray-500 break-words whitespace-normal">
                         {p.kabupaten}, {p.provinsi}
                       </p>
                     </div>
                   </div>
-                  <StatusBadge status={p.status_ulok_eksternal} />
+                  <div className="self-start mb-1 sm:mb-0 sm:ml-20 flex-shrink-0">
+                    <StatusBadge status={p.status_ulok_eksternal} />
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        <div ref={daftarRef} className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
-          <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold text-gray-900">Daftar Usulan Lokasi</h3>
-          </div>
-          <div className="lg:col-span-1">
-            <div className="relative w-full">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Cari berdasarkan Alamat, Kabupaten, atau ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-3 pl-12 border-2 border-gray-200 rounded-xl shadow-sm transition focus:ring-2 focus:ring-rose-500 focus:border-rose-500 bg-white text-sm"
-              />
-            </div>
-          </div>
+        <div ref={daftarRef} className="mb-6">
+          <h3 className="text-xl md:text-2xl font-bold text-gray-900">
+            Daftar Usulan Lokasi
+          </h3>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -237,8 +230,12 @@ export default function DashboardWithAccordion() {
               ) : (
                 <div className="text-center p-16 bg-white rounded-2xl shadow-lg border-2 border-dashed border-gray-200">
                   <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <p className="font-bold text-gray-700 mb-2">Tidak ada aset ditemukan</p>
-                  <p className="text-sm text-gray-500">Coba kata kunci lain atau tambahkan usulan baru</p>
+                  <p className="font-bold text-gray-700 mb-2">
+                    Tidak ada aset ditemukan
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Coba kata kunci lain atau tambahkan usulan baru
+                  </p>
                 </div>
               )}
             </div>
@@ -252,18 +249,32 @@ export default function DashboardWithAccordion() {
           </div>
 
           <div className="lg:w-1/3">
-            <div
-              id="timeline-wrap"
-              className="p-6 bg-white rounded-2xl shadow-lg border border-gray-100 lg:sticky lg:top-20 overflow-y-auto max-h-[calc(100vh-6rem)]"
-            >
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center pb-3 border-b border-gray-200">
-                <Briefcase className="w-5 h-5 mr-2 text-rose-500" />
-                Riwayat Progres
-              </h3>
-              <TimelineStatus
-                property={selectedProperty}
-                assetName={selectedProperty?.alamat}
-              />
+            <div className="lg:sticky lg:top-20 space-y-4">
+              
+              <div className="relative w-full">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Cari alamat, kabupaten, ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div
+                id="timeline-wrap"
+                className="p-6 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-y-auto max-h-[calc(100vh-12rem)]"
+              >
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center pb-3 border-b border-gray-200">
+                  <Briefcase className="w-5 h-5 mr-2 text-rose-500" />
+                  Riwayat Progres
+                </h3>
+                <TimelineStatus
+                  property={selectedProperty}
+                  assetName={selectedProperty?.alamat}
+                />
+              </div>
             </div>
           </div>
         </div>

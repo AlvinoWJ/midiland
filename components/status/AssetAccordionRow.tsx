@@ -44,37 +44,67 @@ export const AssetAccordionRow: React.FC<AssetAccordionRowProps> = ({ property, 
     };
     
     return (
-        <div className={`rounded-2xl transition-all duration-300 ${isSelected ? 'shadow-2xl ring-2 ring-rose-500 bg-white' : 'shadow-md bg-white hover:shadow-xl'}`}>
+        <div 
+            className={`
+                rounded-2xl transition-all duration-300 overflow-hidden
+                ${isSelected 
+                    ? 'shadow-2xl border-2 border-rose-500 bg-white'
+                    : 'shadow-md border-2 border-transparent bg-white hover:shadow-xl'
+                }
+            `}
+        >
             <button
                 onClick={() => onToggle(id)}
-                className={`w-full p-5 flex items-center justify-between text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 ${isSelected ? 'bg-gradient-to-r from-rose-50 to-pink-50 rounded-t-2xl' : 'hover:bg-gray-50 rounded-2xl'}`}
+                className={`
+                    w-full p-5 flex flex-col-reverse md:flex-row items-start md:items-start justify-between text-left transition-colors duration-200 focus:outline-none h-auto
+                    ${isSelected ? 'bg-gradient-to-r from-rose-50 to-pink-50' : 'hover:bg-gray-50 bg-white'}
+                `}
             >
-                <div className="flex items-center space-x-4 min-w-0 flex-1">
-                    <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ${isSelected ? 'bg-gradient-to-br from-rose-500 to-pink-600' : 'bg-gradient-to-br from-gray-600 to-slate-700'}`}>
+                <div className="flex items-start space-x-4 min-w-0 flex-1 w-full mt-3 md:mt-0">
+                    <div className={`
+                        flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-colors duration-300 self-start
+                        ${isSelected ? 'bg-gradient-to-br from-rose-500 to-pink-600' : 'bg-gradient-to-br from-gray-600 to-slate-700'}
+                    `}>
                         <PropertyIcon className="w-6 h-6 text-white" />
                     </div>
                     
                     <div className="flex-1 min-w-0">
+                        <div className="hidden md:flex mb-2 h-8 items-center">
+                            <StatusBadge status={status_ulok_eksternal} />
+                        </div>
+
                         <div className="flex items-center space-x-2 mb-1">
                             <Calendar className="w-3 h-3 text-gray-400" />
                             <p className="text-xs text-gray-500 font-medium">
                                 {formatDateTime(created_at)}
                             </p>
                         </div>
-                        <p className="text-base font-bold text-gray-800 truncate">{alamat}</p>
-                        <p className="text-sm text-gray-600 truncate">{kabupaten}, {provinsi}</p>
+                        <p className="text-base font-bold text-gray-800 break-all whitespace-normal leading-tight mb-1">
+                            {alamat}
+                        </p>
+                        <p className="text-sm text-gray-600 break-words whitespace-normal leading-tight">
+                            {kabupaten}, {provinsi}
+                        </p>
                     </div>
                 </div>
                 
-                <div className="flex-shrink-0 flex flex-col items-end space-y-2 ml-4">
-                    <StatusBadge status={status_ulok_eksternal} />
+                <div className="w-full md:w-auto flex flex-row md:flex-col justify-between md:justify-start items-center md:items-end md:ml-4 self-start">
+                    <div className="md:hidden">
+                        <StatusBadge status={status_ulok_eksternal} />
+                    </div>
+                    
                     <div className={`p-1.5 rounded-full transition-colors ${isSelected ? 'bg-rose-100' : 'bg-gray-100'}`}>
                         {isSelected ? <ChevronUp className="w-5 h-5 text-rose-600" /> : <ChevronDown className="w-5 h-5 text-gray-600" />}
                     </div>
                 </div>
             </button>
             
-            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isSelected ? 'max-h-[5000px]' : 'max-h-0'}`}>
+            {isSelected && <div className="h-[4px] w-full bg-rose-500" />}
+
+            <div className={`
+                transition-all duration-500 ease-in-out 
+                ${isSelected ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}
+            `}>
                 <AssetDetailContent 
                     property={property} 
                     onUpdateSuccess={handleUpdateSuccess} 

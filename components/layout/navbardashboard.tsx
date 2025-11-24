@@ -198,12 +198,12 @@ function NotificationBell() {
 
       <DropdownMenuContent
         align="end"
-        className="w-96 p-0 border-0 rounded-lg overflow-visible relative"
+        className="w-[87vw] sm:w-96 ml-6 -mr-9 sm:mr-0 p-0 border-0 rounded-lg overflow-visible relative"
         sideOffset={8}
       >
         <div className="shadow-lg rounded-lg relative">
           <div
-            className="absolute -top-2 right-3 w-4 h-4 transform rotate-45 z-30"
+            className="absolute -top-2 right-[50px] sm:right-3 w-4 h-4 transform rotate-45 z-30"
             style={{ backgroundColor: "#DC2626" }}
           ></div>
 
