@@ -135,27 +135,27 @@ export function ChatBotButton({ userName, userAvatar }: ChatBotButtonProps) {
         className="fixed bottom-4 right-4 z-40 flex items-center cursor-pointer group"
         aria-label={isOpen ? "Tutup Chat" : "Buka Chat"}
       >
-        <div className="relative w-20 h-20 flex-shrink-0 z-20">
+        <div className="relative w-14 h-14 md:w-20 md:h-20 flex-shrink-0 z-20">
           <div className="absolute inset-0 rounded-full bg-white shadow-lg overflow-hidden border-2 border-gray-100">
             <Image src="/chatbot.png" alt="Milan Assistant" fill className="object-cover object-top" />
           </div>
         </div>
 
-        <div className="relative ml-[-25px] z-10">
+        <div className="relative ml-[-18px] md:ml-[-25px] z-10">
           <div className="relative">
             <div
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[6px] w-0 h-0"
-              style={{ borderTop: "8px solid transparent", borderBottom: "8px solid transparent", borderRight: "8px solid #e4002b" }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[5px] md:-translate-x-[6px] w-0 h-0"
+              style={{ borderTop: "6px solid transparent", borderBottom: "6px solid transparent", borderRight: "6px solid #e4002b" }}
             />
 
-            <div className="bg-[#e4002b] rounded-2xl px-6 py-2.5 shadow-lg min-w-[190px]">
-              <p className="text-white text-[12px] leading-tight">Merasa tersesat?</p>
-              <p className="text-white font-bold text-[14px] leading-tight">Yuk #TanyaMilan!</p>
+            <div className="bg-[#e4002b] rounded-2xl px-4 py-2 md:px-6 md:py-2.5 shadow-lg min-w-[140px] md:min-w-[190px]">
+              <p className="text-white text-[10px] md:text-[12px] leading-tight">Merasa tersesat?</p>
+              <p className="text-white font-bold text-[12px] md:text-[14px] leading-tight">Yuk #TanyaMilan!</p>
             </div>
           </div>
           
-          <div className="absolute -top-5 -right-3 z-30">
-            <div className="relative w-10 h-10">
+          <div className="absolute -top-4 -right-2 md:-top-5 md:-right-3 z-30">
+            <div className="relative w-8 h-8 md:w-10 md:h-10">
               <Image
                 src="/chatbot-floating.svg" 
                 alt="New message notification" 
