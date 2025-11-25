@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  FileText, Image, User, MapPin, Layers, Calendar, Building2,
+  FileText, Image, User, MapPin, Layers, Building2,
   FileCheck, Phone, Ruler, Square, Home, Compass, Map
 } from 'lucide-react';
 import { UlokEksternal } from '@/lib/types/ulok-eksternal';
@@ -25,17 +25,11 @@ export const AssetDetailContent: React.FC<AssetDetailContentProps> = ({
   const supabase = createClient();
 
   const {
-    created_at, bentuk_objek, nama_pemilik, kontak_pemilik,
+    bentuk_objek, nama_pemilik, kontak_pemilik,
     provinsi, kabupaten, kecamatan, desa_kelurahan, latitude, longitude,
     lebar_depan, jumlah_lantai, luas, harga_sewa, alamat, alas_hak, panjang,
-    foto_lokasi, status_ulok_eksternal, updated_at
+    foto_lokasi
   } = property;
-
-  const statusColor =
-    status_ulok_eksternal === "approved" ? "bg-green-100 text-green-700 border-green-300" :
-    status_ulok_eksternal === "rejected" ? "bg-red-100 text-red-700 border-red-300" :
-    status_ulok_eksternal === "review" ? "bg-blue-100 text-blue-700 border-blue-300" :
-    "bg-yellow-100 text-yellow-700 border-yellow-300";
 
   const numericFormatter = new Intl.NumberFormat('id-ID');
   const formattedPriceDisplay = `Rp ${numericFormatter.format(harga_sewa)}`;
@@ -58,29 +52,6 @@ export const AssetDetailContent: React.FC<AssetDetailContentProps> = ({
   const IconNamaPemilik = User;
   const IconKontakPemilik = Phone;
   
-  const formatDateTime = (dateString: string) => {
-    const formatted = new Date(dateString).toLocaleString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hourCycle: 'h23'
-    });
-
-    const parts = formatted.split(', ');
-    const datePart = parts[0]; 
-    let timePart = parts[1]; 
-    
-    if (timePart) {
-        timePart = timePart.replace(/\./g, ':');
-    }
-    return `${datePart}, ${timePart}`;
-  };
-
-  const hasBeenUpdated = updated_at && new Date(updated_at).getTime() !== new Date(created_at).getTime();
-
   const handleViewPhoto = () => {
     if (foto_lokasi) {
       const NAMA_BUCKET_ANDA = 'file_storage_eksternal'; 
@@ -102,37 +73,7 @@ export const AssetDetailContent: React.FC<AssetDetailContentProps> = ({
 
   return (
     <> 
-      <div className="p-6 bg-gradient-to-br from-gray-50 to-white border-t-4 border-rose-500 space-y-6">
-        <div className="flex justify-between items-start p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-          <div className="flex flex-col space-y-1"> 
-              <div className="flex items-center space-x-2">
-                  <Calendar className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm text-gray-700">
-                      <span className="font-medium">Dibuat:</span>{" "}
-                      <span className="font-bold">
-                          {formatDateTime(created_at)}
-                      </span>
-                  </span>
-              </div>
-              
-              {hasBeenUpdated && (
-                  <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm text-gray-700">
-                          <span className="font-medium">Di edit pada:</span>{" "}
-                          <span className="font-bold">
-                              {formatDateTime(updated_at)}
-                          </span>
-                      </span>
-                  </div>
-              )}
-          </div>
-    
-          <div className={`px-3 py-1 border rounded-full text-xs font-bold capitalize ${statusColor} flex-shrink-0 mt-0.5`}>
-            {status_ulok_eksternal}
-          </div>
-        </div>
-
+      <div className="p-6 bg-gradient-to-br from-gray-50 to-white space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="flex items-center space-x-2 mb-4 pb-3 border-b border-gray-200">

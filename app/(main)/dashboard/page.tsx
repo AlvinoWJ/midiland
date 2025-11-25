@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Plus, MapPin, Clock, CheckCircle2, XCircle, AlertCircle, Search} from "lucide-react";
+import { ArrowRight, Plus, MapPin, Clock, CheckCircle2, XCircle, AlertCircle, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -93,24 +93,30 @@ function PropertyCard({ property }: { property: UserProperty }) {
     <Card className="group relative overflow-hidden border border-gray-200 hover:border-primary/30 hover:shadow-xl transition-all duration-300 rounded-xl bg-white">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <CardContent className="relative p-6 flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2 truncate group-hover:text-primary transition-colors" title={property.nama}>
+        <div className="flex flex-col-reverse md:flex-row items-start justify-between gap-4">
+          
+          <div className="flex-1 min-w-0 w-full">
+            <h3 
+              className="text-lg font-semibold text-gray-900 mb-2 break-words group-hover:text-primary transition-colors" 
+              title={property.nama}
+            >
               {property.nama}
             </h3>
+            
             <div className="flex items-start gap-2 text-gray-600">
               <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-              <p className="text-sm leading-relaxed line-clamp-2" title={locationTitle}>
+              <p className="text-sm leading-relaxed break-words" title={locationTitle}>
                 {locationText}
               </p>
             </div>
           </div>
       
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${statusInfo.color} shrink-0 transition-transform group-hover:scale-105`}>
+          <div className={`self-start flex items-center gap-2 px-3 py-1.5 rounded-full border ${statusInfo.color} shrink-0 transition-transform group-hover:scale-105`}>
             <div className={`w-2 h-2 rounded-full ${statusInfo.dotColor} animate-pulse`} />
             <span className="text-xs font-semibold whitespace-nowrap">{statusInfo.text}</span>
           </div>
         </div>
+
         <div className="border-t border-gray-100" />
 
         <Link
@@ -180,32 +186,32 @@ export default async function DashboardPage() {
           />
         </div>
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 py-16 lg:py-24">
+        <div className="relative z-10 w-full max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-12 py-10 lg:py-24">
             <div className="flex-1 flex flex-col text-center lg:text-left items-center lg:items-start max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 sm:mb-6">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 Dashboard Properti
               </div>
               
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl sm:text-2xl lg:text-4xl font-bold text-gray-900 mb-4">
                 Selamat Datang,
-                <span className="block text-primary mt-2">{userName}</span>
+                <span className="block text-primary mt-2 text-2xl sm:text-2xl lg:text-4xl">
+                  {userName}
+                </span>
               </h1>
               
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-xl">
+              <p className="text-xs sm:text-xl lg:text-sm text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-xl">
                 Kelola semua properti yang telah Anda ajukan dengan mudah. Pantau status persetujuan dan kelola submission Anda dalam satu tempat.
               </p>
               
               <Button
                 asChild
-                size="lg"
-                className="group rounded-full shadow-lg hover:shadow-xl bg-primary hover:bg-primary/90 text-white font-semibold text-base px-8 py-6 transition-all duration-300"
+                className="group rounded-full shadow-lg hover:shadow-xl bg-primary hover:bg-primary/90 text-white font-semibold text-sm sm:text-base px-18 py-4 sm:px-12 sm:py-6 lg:px-24 lg:py-5 transition-all duration-300"
               >
-                <Link href="/input" className="flex items-center gap-2">
-                  <Plus className="w-5 h-5" />
+                <Link href="/input" className="flex items-center gap-3 sm:gap-4">
                   Ajukan Properti Baru
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
             </div>
@@ -227,7 +233,7 @@ export default async function DashboardPage() {
       </section>
 
       {fetchError && (
-        <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <section className="w-full max-w-6xl mx-auto ">
           <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 shadow-sm">
             <div className="flex items-start gap-3">
               <XCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -241,7 +247,7 @@ export default async function DashboardPage() {
         </section>
       )}
 
-      <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+      <section className="max-w-6xl mx-auto pb-12 px-4 sm:px-0">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">

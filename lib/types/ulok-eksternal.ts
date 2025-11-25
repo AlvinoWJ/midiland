@@ -21,6 +21,8 @@ export interface UlokEksternal {
   updated_at: string;
   branch_id: string | null;
   penanggungjawab: string | null;
+  penanggungjawab_nama?: string | null;
+  penanggungjawab_telp?: string | null;
   foto_lokasi: string | null;
   status_ulok_eksternal: "Draft" | "In Progress" | "OK" | "Rejected" | string;
   approved_at: string | null;

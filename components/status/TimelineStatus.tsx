@@ -1,152 +1,116 @@
 import React from 'react';
-import { Briefcase, CheckCircle, Clock, MinusCircle } from 'lucide-react';
+import { Briefcase, CheckCircle, Clock, MinusCircle, XCircle } from 'lucide-react';
 import { UlokEksternal, TimelineStep } from '@/lib/types/ulok-eksternal';
-import { getTimelineById, generateDefaultTimeline } from '@/components/status/hooks/useFetchData';
+import { generateTimeline, formatDateIndo } from '@/lib/utils/timeline-logic';
 
 interface TimelineStatusProps {
     property: UlokEksternal | null;
     assetName: string | undefined;
 }
 
-const formatDateTime = (dateString: string | undefined): string => {
-    if (!dateString) return '';
-    
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
-
-    const formatted = date.toLocaleString('id-ID', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hourCycle: 'h23' 
-    });
-
-    const parts = formatted.split(', ');
-    const datePart = parts[0]; 
-    let timePart = parts[1]; 
-    
-    if (timePart) {
-        timePart = timePart.replace(/\./g, ':');
-    }
-    
-    return `${datePart}, ${timePart}`;
-};
-
-
 export const TimelineStatus: React.FC<TimelineStatusProps> = ({ property, assetName }) => {
     if (!property) {
       return (
-        <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
-            <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Briefcase className="w-8 h-8 text-rose-500" />
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+            <div className="bg-white p-3 rounded-full shadow-sm mb-3">
+                <Briefcase className="w-6 h-6 text-rose-500" />
             </div>
-            <p className="font-bold text-gray-700 mb-2">Pilih Aset</p>
-            <p className="text-sm text-gray-500 px-4">Klik salah satu aset untuk melihat progres pengajuan</p>
+            <p className="font-semibold text-gray-700">Pilih Aset</p>
+            <p className="text-sm text-gray-500 mt-1">Klik aset di sebelah kiri untuk melihat detail.</p>
         </div>
       );
     }
     
-    let currentTimeline = getTimelineById(property.id);
-    
-    if (currentTimeline.length === 0) {
-        currentTimeline = generateDefaultTimeline(property);
-        console.log(`📋 Generated timeline for ${property.id} based on status: ${property.status_ulok_eksternal}`);
-    } else {
-        console.log(`📋 Using dummy timeline for ${property.id}`);
-    }
-    
-    if (currentTimeline.length === 0) {
-        return (
-            <div className="text-gray-500 text-center py-8">
-                <p className="font-semibold mb-2">Riwayat progres tidak tersedia</p>
-            </div>
-        );
-    }
+    const currentTimeline = generateTimeline(property);
 
-    const getStatusClasses = (status: TimelineStep['status']) => {
+    const getStatusClasses = (status: TimelineStep['status'], details: string = '') => {
+        const isRejected = details.toLowerCase().includes('ditolak') || details.toLowerCase().includes('tidak disetujui');
+
+        if (isRejected) {
+             return { 
+                Icon: XCircle, 
+                bgColor: "bg-red-50", 
+                borderColor: "border-red-200", 
+                textColor: "text-red-800",
+                iconColor: "text-red-500",
+                ringColor: "ring-red-100"
+            };
+        }
+
         switch (status) {
-        case 'completed':
-            return { Icon: CheckCircle, color: "bg-gradient-to-br from-green-500 to-emerald-600", ring: "ring-green-200"}; 
-        case 'in-progress':
-            return { Icon: Clock, color: "bg-gradient-to-br from-amber-500 to-orange-600", ring: "ring-orange-200"}; 
-        case 'pending':
-            return { Icon: MinusCircle, color: "bg-gradient-to-br from-gray-300 to-gray-400", ring: "ring-gray-200"};
-        default:
-            return { Icon: Clock, color: "bg-gradient-to-br from-gray-300 to-gray-400", ring: "ring-gray-200"};
+            case 'completed':
+                return { 
+                    Icon: CheckCircle, 
+                    bgColor: "bg-green-50", 
+                    borderColor: "border-green-200", 
+                    textColor: "text-green-800",
+                    iconColor: "text-green-600",
+                    ringColor: "ring-green-100"
+                }; 
+            case 'in-progress':
+                return { 
+                    Icon: Clock, 
+                    bgColor: "bg-amber-50", 
+                    borderColor: "border-amber-200", 
+                    textColor: "text-amber-800",
+                    iconColor: "text-amber-600",
+                    ringColor: "ring-amber-100"
+                }; 
+            default:
+                return { 
+                    Icon: MinusCircle, 
+                    bgColor: "bg-gray-50", 
+                    borderColor: "border-gray-200", 
+                    textColor: "text-gray-500",
+                    iconColor: "text-gray-400",
+                    ringColor: "ring-gray-100"
+                };
         }
     };
 
     return (
         <div className="flow-root">
-            <div className="mb-6 p-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-200">
-                <p className="text-xs font-medium text-gray-600">Aset Terpilih</p>
-                <p className="text-sm font-bold text-gray-800 mt-1">{assetName}</p>
+            <div className="mb-6 p-4 bg-gradient-to-r from-rose-50 to-white rounded-xl border border-rose-100 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-wider text-rose-500 mb-1">
+                    Lokasi Dipilih :
+                </p>
+                <p className="text-sm font-bold text-gray-900 break-words leading-snug">
+                    {assetName}
+                </p>
             </div>
-            <ul role="list" className="space-y-6">
+
+            <ul role="list" className="-mb-8">
                 {currentTimeline.map((item, index) => {
-                const { Icon, color, ring } = getStatusClasses(item.status);
-                const isLast = index === currentTimeline.length - 1;
-                const isCompleted = item.status === 'completed';
-                const isInProgress = item.status === 'in-progress';
+                    const isLast = index === currentTimeline.length - 1;
+                    const { Icon, bgColor, borderColor, textColor, iconColor, ringColor } = 
+                        getStatusClasses(item.status, item.details);
 
-                let detailText: string = item.details || ''; 
-
-                if (item.step === "Pengajuan Lokasi" && property?.created_at) {
-                    detailText = formatDateTime(property.created_at);
-                } 
-                else if (item.details) {
-                    const isDateWithTime = typeof item.details === 'string' && item.details.includes('T') && item.details.includes(':');
-                    const isPlainDate = typeof item.details === 'string' && /\d{4}-\d{2}-\d{2}/.test(item.details) && !item.details.includes('T');
-                    
-                    if (isDateWithTime) {
-                        detailText = formatDateTime(item.details);
-                    } else if (isPlainDate) {
-                        detailText = new Date(item.details).toLocaleDateString('id-ID', { 
-                            weekday: 'long', 
-                            day: '2-digit', 
-                            month: 'short', 
-                            year: 'numeric' 
-                        });
-                    } else {
-                        detailText = item.details;
-                    }
-                }
-                
-                return (
-                    <li key={index}>
-                    <div className="relative">
-                        {!isLast && (
-                        <span className="absolute top-10 left-4 -ml-px h-full w-0.5 bg-gradient-to-b from-gray-300 to-gray-200" aria-hidden="true" />
-                        )}
-                        <div className="relative flex items-start space-x-4">
-                        <div className="flex-shrink-0">
-                            <span className={`h-8 w-8 rounded-xl flex items-center justify-center ring-4 ${ring} ${color} shadow-lg`}>
-                            <Icon className="h-4 w-4 text-white" aria-hidden="true" />
-                            </span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <div className={`p-3 rounded-xl ${isInProgress ? 'bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200' : isCompleted ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200' : 'bg-gray-50 border border-gray-200'}`}>
-                                <p className={`text-sm font-bold ${isInProgress ? 'text-orange-700' : isCompleted ? 'text-green-700' : 'text-gray-700'}`}>
-                                    {item.step}
-                                </p>
-                                <p className="text-xs text-gray-600 mt-1">
-                                    {detailText}
-                                </p>
-                                {item.linkText && (
-                                    <a href={item.linkUrl || "#"} className="text-xs text-rose-600 font-semibold hover:text-rose-800 transition mt-2 inline-block">
-                                        {item.linkText} →
-                                    </a>
+                    return (
+                        <li key={index}>
+                            <div className="relative pb-8">
+                                {!isLast && (
+                                    <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
                                 )}
+                                
+                                <div className="relative flex items-start space-x-3">
+                                    <div className={`relative flex h-8 w-8 items-center justify-center rounded-full bg-white ring-4 ${ringColor}`}>
+                                        <Icon className={`h-5 w-5 ${iconColor}`} aria-hidden="true" />
+                                    </div>
+
+                                    <div className={`flex-1 min-w-0 rounded-lg border ${borderColor} ${bgColor} p-3 transition-all hover:shadow-sm`}>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <p className={`text-sm font-bold ${textColor}`}>
+                                                {item.step}
+                                            </p>
+                                        </div>
+                                        <p className="text-xs text-gray-600 font-medium break-words whitespace-pre-line">
+                                            {formatDateIndo(item.details)}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        </div>
-                    </div>
-                    </li>
-                );
+                        </li>
+                    );
                 })}
             </ul>
         </div>

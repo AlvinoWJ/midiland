@@ -49,7 +49,7 @@ const formatChatTime = (timestamp: number): string => {
 };
 
 const DateSeparator: FC<{ date: string }> = ({ date }) => (
-  <div className="flex justify-center my-4">
+  <div className="flex justify-center mb-4">
     <span className="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full">
       {date}
     </span>
@@ -163,7 +163,7 @@ const ChatWindow: FC<ChatWindowProps> = ({
     <div className="fixed bottom-20 right-4 w-96 z-50 font-sans">
       <div 
         className="absolute z-50 pointer-events-none" 
-        style={{ top: "-74px", left: "-5px" }}
+        style={{ top: "-75px", left: "-5px" }}
       >
           <img
             src="/midiland-assistant.svg"
