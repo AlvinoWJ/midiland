@@ -34,8 +34,11 @@ function safeFileName(name: string) {
   return (normalized || "file") + ext.toLowerCase();
 }
 
-
-async function ensureOwnedRow(supabase: SupabaseClient, id: string, userId: string) {
+async function ensureOwnedRow(
+  supabase: SupabaseClient,
+  id: string,
+  userId: string
+) {
   const { data, error } = await supabase
     .from("ulok_eksternal")
     .select("*")
@@ -61,7 +64,88 @@ export async function GET(
     const row = await ensureOwnedRow(supabase, params.id, user.id);
     if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    return NextResponse.json({ data: row });
+    let pjNama: string | null = null;
+    let pjNoTelp: string | null = null;
+
+    if (row.penanggungjawab) {
+      const { data: pj, error: pjErr } = await supabase
+        .from("users")
+        .select("id, nama, no_telp")
+        .eq("id", row.penanggungjawab)
+        .maybeSingle();
+
+      if (!pjErr && pj) {
+        pjNama = pj.nama ?? null;
+        pjNoTelp = pj.no_telp ?? null;
+      }
+    }
+
+    if (!pjNama) {
+       const { data: activityData, error: actError } = await supabase
+        .from("assignment_activities")
+        .select(`
+            assignments!inner (
+                users!inner (
+                    nama,
+                    no_telp
+                )
+            )
+        `)
+        .eq("external_location_id", row.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (!actError && activityData) {
+          const assignmentInfo = activityData.assignments as any;
+          if (assignmentInfo?.users) {
+              pjNama = assignmentInfo.users.nama ?? null;
+              pjNoTelp = assignmentInfo.users.no_telp ?? null;
+          }
+      }
+    }
+
+    let kpltApproval: string | null = null;
+
+    const { data: uloks, error: ulokErr } = await supabase
+      .from("ulok")
+      .select("id")
+      .eq("ulok_eksternal_id", row.id);
+
+    if (!ulokErr && uloks && uloks.length > 0) {
+      const ulokIds = uloks.map((u) => u.id);
+      const { data: latestKplt, error: kErr } = await supabase
+        .from("kplt")
+        .select("id, kplt_approval, created_at, ulok_id")
+        .in("ulok_id", ulokIds)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!kErr && latestKplt) {
+        kpltApproval = latestKplt.kplt_approval ?? null;
+      }
+    }
+
+    const status = {
+      created_at: row.created_at ?? null,
+      status_ulok_eksternal: row.status_ulok_eksternal ?? null,
+      approved_at: row.approved_at ?? null,
+      penanggungjawab: {
+        nama: pjNama,
+        no_telp: pjNoTelp,
+      },
+      kplt_approval: kpltApproval,
+    };
+
+    return NextResponse.json(
+      {
+        success: true,
+        ulok_eksternal: row,
+        status,
+      },
+      { status: 200 }
+    );
   } catch (e: any) {
     return NextResponse.json(
       { error: e?.message ?? "Unknown error" },
@@ -102,7 +186,7 @@ export async function PATCH(
     delete patch.branch_id;
     delete patch.penanggungjawab;
     delete patch.approved_at;
-    delete patch.users_eksternal_id; 
+    delete patch.users_eksternal_id;
     delete patch.id;
 
     const newFile =
@@ -203,8 +287,7 @@ export async function DELETE(
         const paths = files.map((f: any) => `${prefix}/${f.name}`);
         await supabase.storage.from("file_storage_eksternal").remove(paths);
       }
-    } catch {
-    }
+    } catch {}
 
     return NextResponse.json({ success: true });
   } catch (e: any) {

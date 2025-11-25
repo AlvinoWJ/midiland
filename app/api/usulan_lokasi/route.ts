@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     );
     const offset = Math.max(0, Number(searchParams.get("offset") ?? 0));
 
-    const { data, count, error } = await supabase
+    const { data: rawData, count, error } = await supabase
       .from("ulok_eksternal")
       .select("*", { count: "exact" })
       .eq("users_eksternal_id", user.id)
@@ -61,7 +62,70 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ data, count, limit, offset });
+    let enrichedData = [];
+
+    if (rawData && rawData.length > 0) {
+      const ulokIds = rawData.map((d) => d.id);
+      
+      const existingPjIds = rawData
+        .map((d) => d.penanggungjawab)
+        .filter((id) => id !== null) as string[];
+      const userMap: Record<string, { nama: string, no_telp: string | null }> = {};
+      
+      if (existingPjIds.length > 0) {
+        const { data: users } = await supabase
+          .from("users")
+          .select("id, nama, no_telp")
+          .in("id", existingPjIds);
+        
+        if (users) {
+          users.forEach((u) => { 
+              userMap[u.id] = { nama: u.nama, no_telp: u.no_telp }; 
+          });
+        }
+      }
+
+      const { data: activities } = await supabase
+          .from("assignment_activities")
+          .select(`
+              external_location_id,
+              assignments!inner (
+                  users!inner ( nama, no_telp ) // Tambahkan no_telp
+              )
+          `)
+          .in("external_location_id", ulokIds);
+      
+      const activityMap: Record<string, { nama: string, no_telp: string | null }> = {};
+      if (activities) {
+          activities.forEach((item: any) => {
+              const u = item.assignments?.users;
+              if (item.external_location_id && u?.nama) {
+                  activityMap[item.external_location_id] = { nama: u.nama, no_telp: u.no_telp };
+              }
+          });
+      }
+
+      enrichedData = rawData.map(row => {
+          let pjInfo = null;
+          
+          if (row.penanggungjawab && userMap[row.penanggungjawab]) {
+              pjInfo = userMap[row.penanggungjawab];
+          } 
+          else if (activityMap[row.id]) {
+              pjInfo = activityMap[row.id];
+          }
+
+          return {
+              ...row,
+              penanggungjawab_nama: pjInfo?.nama ?? null,
+              penanggungjawab_telp: pjInfo?.no_telp ?? null
+          };
+      });
+    } else {
+        enrichedData = [];
+    }
+
+    return NextResponse.json({ data: enrichedData, count, limit, offset });
   } catch (e: unknown) {
     return NextResponse.json(
       { error: (e instanceof Error ? e.message : "Unknown error") },
