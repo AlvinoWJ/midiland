@@ -80,6 +80,31 @@ export async function GET(
       }
     }
 
+    if (!pjNama) {
+       const { data: activityData, error: actError } = await supabase
+        .from("assignment_activities")
+        .select(`
+            assignments!inner (
+                users!inner (
+                    nama,
+                    no_telp
+                )
+            )
+        `)
+        .eq("external_location_id", row.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (!actError && activityData) {
+          const assignmentInfo = activityData.assignments as any;
+          if (assignmentInfo?.users) {
+              pjNama = assignmentInfo.users.nama ?? null;
+              pjNoTelp = assignmentInfo.users.no_telp ?? null;
+          }
+      }
+    }
+
     let kpltApproval: string | null = null;
 
     const { data: uloks, error: ulokErr } = await supabase
@@ -121,8 +146,6 @@ export async function GET(
       },
       { status: 200 }
     );
-
-    return NextResponse.json({ data: row });
   } catch (e: any) {
     return NextResponse.json(
       { error: e?.message ?? "Unknown error" },
