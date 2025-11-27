@@ -94,12 +94,19 @@ export default function DashboardWithAccordion() {
   );
 
   const total = propertiesData.length;
-  const pending = propertiesData.filter(
-    (p) => p.status_ulok_eksternal === "In Progress"
-  ).length;
-  const rented = propertiesData.filter(
-    (p) => p.status_ulok_eksternal === "OK"
-  ).length;
+
+  const rented = propertiesData.filter((p) => {
+      const kplt = p.kplt_approval?.toLowerCase() || '';
+      return ['approved', 'disetujui', 'ok'].includes(kplt);
+  }).length;
+
+  const pending = propertiesData.filter((p) => {
+      const kplt = p.kplt_approval?.toLowerCase() || '';
+      const isApproved = ['approved', 'disetujui', 'ok'].includes(kplt);
+      const isRejected = p.status_ulok_eksternal === 'Rejected' || kplt.includes('reject') || kplt.includes('tolak') || kplt.includes('nok');
+      const isDraft = p.status_ulok_eksternal === 'Draft';
+      return !isApproved && !isRejected && !isDraft;
+  }).length;
 
   const recentProperties = useMemo(
     () =>
@@ -199,7 +206,7 @@ export default function DashboardWithAccordion() {
                     </div>
                   </div>
                   <div className="self-start mb-1 sm:mb-0 sm:ml-20 flex-shrink-0">
-                    <StatusBadge status={p.status_ulok_eksternal} />
+                    <StatusBadge status={p.status_ulok_eksternal} kplt_approval={p.kplt_approval} />
                   </div>
                 </div>
               );
