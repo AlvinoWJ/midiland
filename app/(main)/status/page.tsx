@@ -171,9 +171,9 @@ export default function DashboardWithAccordion() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-          <KPICard title="Total Aset Terdaftar" value={total} Icon={List} color="text-indigo-600" />
-          <KPICard title="Pengajuan Aktif" value={pending} Icon={Clock} color="text-amber-600" />
-          <KPICard title="Aset Aktif Disewa" value={rented} Icon={CheckCircle} color="text-green-600" />
+          <KPICard title="Total Property Terdaftar" value={total} Icon={List} color="text-indigo-600" />
+          <KPICard title="Total Pengajuan Dalam Proses" value={pending} Icon={Clock} color="text-amber-600" />
+          <KPICard title="Total Property disetujui" value={rented} Icon={CheckCircle} color="text-green-600" />
         </div>
 
         <div className="p-4 md:p-6 bg-white rounded-2xl shadow-lg border border-gray-100 mb-8">
