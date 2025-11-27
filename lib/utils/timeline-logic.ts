@@ -99,7 +99,7 @@ export const generateTimeline = (property: UlokEksternal): TimelineStep[] => {
             approvalDetails = "Pengajuan dihentikan / Ditolak";
         } else {
             approvalStatus = 'pending';
-            approvalDetails = "Menunggu jadwal/hasil sidang KPLT";
+            approvalDetails = "Menunggu jadwal/hasil Rapat Internal";
         }
     }
 
