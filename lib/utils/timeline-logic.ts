@@ -28,7 +28,6 @@ export const formatDateIndo = (dateString: string | null | undefined): string =>
 export const generateTimeline = (property: UlokEksternal): TimelineStep[] => {
     const timeline: TimelineStep[] = [];
     const status = property.status_ulok_eksternal;
-
     timeline.push({
         step: "Pengajuan Lokasi",
         status: "completed",
@@ -86,9 +85,9 @@ export const generateTimeline = (property: UlokEksternal): TimelineStep[] => {
             approvalStatus = 'completed';
             approvalDetails = property.approved_at || "Disetujui oleh KPLT / GM";
         } 
-        else if (kpltStatus.includes('reject') || kpltStatus.includes('tolak')) {
+        else if (kpltStatus.includes('reject') || kpltStatus.includes('tolak') || kpltStatus.includes('nok')) {
             approvalStatus = 'pending';
-            approvalDetails = "Mohon maaf, pengajuan Ditolak berdasarkan hasil KPLT";
+            approvalDetails = `Mohon maaf, pengajuan Ditolak berdasarkan hasil KPLT (${property.kplt_approval})`;
         }
         else {
             approvalStatus = 'in-progress';
