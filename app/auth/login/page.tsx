@@ -10,26 +10,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 
+// DATA CAROUSEL
 const carouselSlides = [
   {
-    image: "/carousel1.svg",
-    alt: "Ilustrasi Proses Pengajuan",
-    title: "Proses Pengajuan Mudah dan Terpadu",
+    image: "/2.png",
+    alt: "Kemitraan Terpercaya",
+    title: "Kemitraan Terpercaya",
   },
   {
-    image: "/carousel2.svg",
-    alt: "Ilustrasi Profesional",
-    title: "Survei dan Verifikasi Profesional",
+    image: "/3.png",
+    alt: "Peluang Menguntungkan",
+    title: "Peluang Menguntungkan",
   },
   {
-    image: "/carousel3.svg",
-    alt: "Ilustrasi Kerja Sama",
-    title: "Kerja Sama Aman dan Transparan",
-  },
-  {
-    image: "/carousel4.svg",
-    alt: "Ilustrasi Perkembangan",
-    title: "Nilai Aset Semakin Berkembang",
+    image: "/4.png",
+    alt: "Proses Mudah dan Cepat",
+    title: "Proses Mudah dan Cepat",
   },
 ];
 
@@ -172,8 +168,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      <div className="relative flex w-full lg:w-1/2 flex-col items-center md:justify-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
-        <div className="w-full max-w-lg space-y-4 pt-8 md:pt-0"> 
+      {/* --- LEFT SIDE (FORM) --- */}
+      <div className="relative flex w-full lg:w-1/2 flex-col items-center md:justify-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto z-10">
+        <div className="w-full max-w-lg space-y-4 pt-8 md:pt-0">
           <div className="flex justify-center mb-3 lg:hidden">
             <Image
               src="/alfamidilogo.svg"
@@ -314,20 +311,12 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-6 lg:p-8 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/login.svg"
-            alt="City Background"
-            fill
-            className="object-cover"
-            quality={100}
-            priority
-          />
-        </div>
+      {/* --- RIGHT SIDE (CAROUSEL FULL SCREEN) --- */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gray-100">
         
-        <div className="absolute top-6 right-6">
-          <div className="border-2 border-white rounded-xl p-2 bg-white shadow-md">
+        {/* LOGO (Dipertahankan) */}
+        <div className="absolute top-6 right-6 z-30">
+          <div className="border-2 border-white rounded-xl p-2 bg-white/90 shadow-md backdrop-blur-sm">
             <Image
               src="/alfamidilogo.svg"
               alt="Alfamidi Logo"
@@ -339,45 +328,54 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="relative z-10 w-full max-w-md lg:max-w-lg aspect-[4/3] rounded-2xl shadow-xl overflow-hidden backdrop-blur-md bg-white/40">
+        {/* CAROUSEL CONTAINER (Full size) */}
+        <div className="absolute inset-0 z-0">
           <div
-            className="flex transition-transform duration-500 ease-in-out h-full"
+            className="flex transition-transform duration-700 ease-in-out h-full"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
             {carouselSlides.map((slide, index) => (
               <div
                 key={index}
-                className="w-full flex-shrink-0 h-full flex flex-col items-center justify-center text-center p-8 space-y-4"
+                className="w-full h-full flex-shrink-0 relative"
               >
-                <div className="relative w-48 h-48 lg:w-64 lg:h-64 mb-4">
-                  <Image
-                    src={slide.image}
-                    alt={slide.alt}
-                    layout="fill"
-                    objectFit="contain"
-                  />
+                {/* Gambar Full Size */}
+                <Image
+                  src={slide.image}
+                  alt={slide.alt}
+                  fill
+                  className="object-cover"
+                  priority={index === 0}
+                />
+                
+                {/* Overlay Hitam Gradasi DARI ATAS KE BAWAH agar teks atas terbaca */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-transparent z-10" />
+
+                {/* Teks Content (Posisi ATAS) */}
+                <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-start items-center pt-24 md:pt-32 px-12 z-20">
+                  <h2 className="text-3xl md:text-5xl font-bold text-white text-center drop-shadow-xl leading-tight">
+                    {slide.title}
+                  </h2>
                 </div>
-                <h2 className="text-xl lg:text-2xl font-semibold text-gray-800">
-                  {slide.title}
-                </h2>
               </div>
             ))}
           </div>
+        </div>
 
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {carouselSlides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  currentSlide === index
-                    ? "bg-secondary"
-                    : "bg-gray-400 hover:bg-gray-500"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+        {/* Indikator Slide (Dots) */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+          {carouselSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                currentSlide === index
+                  ? "bg-secondary w-8"
+                  : "bg-white/50 hover:bg-white"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
     </div>
