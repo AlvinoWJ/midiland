@@ -53,7 +53,7 @@ export const generateTimeline = (property: UlokEksternal): TimelineStep[] => {
         } else {
             surveyDetails = "Sedang dalam proses survey lapangan";
         }
-    } else if (status === 'OK' || status === 'Rejected') {
+    } else if (status === 'OK') {
         surveyStatus = 'completed';
         
         if (property.penanggungjawab_nama) {
@@ -63,8 +63,11 @@ export const generateTimeline = (property: UlokEksternal): TimelineStep[] => {
              }
              surveyDetails = details;
         } else {
-             surveyDetails = "Survey lapangan selesai";
+             surveyDetails = "Survey lapangan selesai (Menunggu Approval KPLT)";
         }
+    } else if (status === 'Rejected') {
+        surveyStatus = 'completed'; 
+        surveyDetails = "Survey selesai (Tidak Lolos)";
     }
 
     timeline.push({
@@ -72,18 +75,33 @@ export const generateTimeline = (property: UlokEksternal): TimelineStep[] => {
         status: surveyStatus,
         details: surveyDetails
     });
-
+    
     let approvalStatus: TimelineStep['status'] = 'pending';
-    let approvalDetails = "Menunggu hasil survey";
+    let approvalDetails = "Menunggu keputusan manajemen (GM/KPLT)";
 
-    if (status === 'OK') {
-        approvalStatus = 'completed';
-        approvalDetails = property.approved_at || "Lokasi telah disetujui";
-    } else if (status === 'Rejected') {
-        approvalStatus = 'pending'; 
-        approvalDetails = "Mohon maaf, pengajuan lokasi Ditolak";
-    } else if (status === 'In Progress') {
-        approvalDetails = "Menunggu keputusan manajemen";
+    const kpltStatus = property.kplt_approval ? property.kplt_approval.toLowerCase() : '';
+
+    if (kpltStatus) {
+        if (['approved', 'disetujui', 'ok'].includes(kpltStatus)) {
+            approvalStatus = 'completed';
+            approvalDetails = property.approved_at || "Disetujui oleh KPLT / GM";
+        } 
+        else if (kpltStatus.includes('reject') || kpltStatus.includes('tolak')) {
+            approvalStatus = 'pending';
+            approvalDetails = "Mohon maaf, pengajuan Ditolak berdasarkan hasil KPLT";
+        }
+        else {
+            approvalStatus = 'in-progress';
+            approvalDetails = `Sedang dalam proses review KPLT (${property.kplt_approval})`;
+        }
+    } else {
+        if (status === 'Rejected') {
+            approvalStatus = 'pending'; 
+            approvalDetails = "Pengajuan dihentikan / Ditolak";
+        } else {
+            approvalStatus = 'pending';
+            approvalDetails = "Menunggu jadwal/hasil sidang KPLT";
+        }
     }
 
     timeline.push({

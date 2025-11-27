@@ -23,6 +23,7 @@ export interface UlokEksternal {
   penanggungjawab: string | null;
   penanggungjawab_nama?: string | null;
   penanggungjawab_telp?: string | null;
+  kplt_approval?: string | null; 
   foto_lokasi: string | null;
   status_ulok_eksternal: "Draft" | "In Progress" | "OK" | "Rejected" | string;
   approved_at: string | null;

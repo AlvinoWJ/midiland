@@ -62,10 +62,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    let enrichedData = [];
+    let enrichedData: any[] = [];
 
     if (rawData && rawData.length > 0) {
-      const ulokIds = rawData.map((d) => d.id);
+      const ulokEksternalIds = rawData.map((d) => d.id);
       
       const existingPjIds = rawData
         .map((d) => d.penanggungjawab)
@@ -90,10 +90,10 @@ export async function GET(req: NextRequest) {
           .select(`
               external_location_id,
               assignments!inner (
-                  users!inner ( nama, no_telp ) // Tambahkan no_telp
+                  users!inner ( nama, no_telp )
               )
           `)
-          .in("external_location_id", ulokIds);
+          .in("external_location_id", ulokEksternalIds);
       
       const activityMap: Record<string, { nama: string, no_telp: string | null }> = {};
       if (activities) {
@@ -103,6 +103,34 @@ export async function GET(req: NextRequest) {
                   activityMap[item.external_location_id] = { nama: u.nama, no_telp: u.no_telp };
               }
           });
+      }
+
+      const { data: ulokInternal } = await supabase
+        .from('ulok')
+        .select('id, ulok_eksternal_id')
+        .in('ulok_eksternal_id', ulokEksternalIds);
+
+      const kpltMap: Record<string, string> = {}; 
+
+      if (ulokInternal && ulokInternal.length > 0) {
+          const internalUlokIds = ulokInternal.map(u => u.id);
+          
+          const { data: kpltData } = await supabase
+            .from('kplt')
+            .select('ulok_id, kplt_approval')
+            .in('ulok_id', internalUlokIds);
+
+          if (kpltData) {
+             const ulokToKplt: Record<string, string> = {};
+             kpltData.forEach(k => {
+                 if(k.kplt_approval) ulokToKplt[k.ulok_id] = k.kplt_approval;
+             });
+             ulokInternal.forEach(u => {
+                 if (ulokToKplt[u.id]) {
+                     kpltMap[u.ulok_eksternal_id] = ulokToKplt[u.id];
+                 }
+             });
+          }
       }
 
       enrichedData = rawData.map(row => {
@@ -118,7 +146,8 @@ export async function GET(req: NextRequest) {
           return {
               ...row,
               penanggungjawab_nama: pjInfo?.nama ?? null,
-              penanggungjawab_telp: pjInfo?.no_telp ?? null
+              penanggungjawab_telp: pjInfo?.no_telp ?? null,
+              kplt_approval: kpltMap[row.id] || null 
           };
       });
     } else {
