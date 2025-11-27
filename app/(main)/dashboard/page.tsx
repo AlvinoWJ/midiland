@@ -1,17 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Plus, MapPin, Clock, CheckCircle2, XCircle, AlertCircle, Search } from "lucide-react";
+import { ArrowRight, Plus, MapPin, XCircle, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-
-type PropertyStatus = "disetujui" | "survey" | "ditolak" | "review";
-type DbStatus = PropertyStatus | "In Progress"; 
+import { StatusBadge } from "@/components/status/StatusBadge";
 
 interface DatabaseProperty {
   id: string;
   alamat: string;
-  status_ulok_eksternal: DbStatus;
+  status_ulok_eksternal: string;
   kabupaten: string | null;
   kecamatan: string | null;     
 }
@@ -22,66 +20,11 @@ interface UserProperty {
   alamat: string;
   kabupaten: string | null;
   kecamatan: string | null;
-  status: PropertyStatus;
+  status: string;
+  kplt_approval: string | null;
 }
 
-const mapStatus = (dbStatus: DbStatus): PropertyStatus => {
-  switch (dbStatus) {
-    case "disetujui":
-    case "survey":
-    case "ditolak":
-    case "review":
-      return dbStatus;
-    case "In Progress":
-      return "review";
-    default:
-      return "review";
-  }
-};
-
 function PropertyCard({ property }: { property: UserProperty }) {
-  const getStatusInfo = (status: PropertyStatus) => {
-    switch (status) {
-      case "disetujui":
-        return {
-          text: "Disetujui",
-          color: "text-emerald-700 bg-emerald-50 border-emerald-200",
-          icon: <CheckCircle2 className="w-4 h-4" />,
-          dotColor: "bg-emerald-500"
-        };
-      case "survey":
-        return {
-          text: "Survey",
-          color: "text-blue-700 bg-blue-50 border-blue-200",
-          icon: <Clock className="w-4 h-4" />,
-          dotColor: "bg-blue-500"
-        };
-      case "ditolak":
-        return {
-          text: "Ditolak",
-          color: "text-red-700 bg-red-50 border-red-200",
-          icon: <XCircle className="w-4 h-4" />,
-          dotColor: "bg-red-500"
-        };
-      case "review":
-        return {
-          text: "Sedang Direview",
-          color: "text-amber-700 bg-amber-50 border-amber-200",
-          icon: <AlertCircle className="w-4 h-4" />,
-          dotColor: "bg-amber-500"
-        };
-      default:
-        return {
-          text: "Draft",
-          color: "text-gray-700 bg-gray-50 border-gray-200",
-          icon: <Clock className="w-4 h-4" />,
-          dotColor: "bg-gray-500"
-        };
-    }
-  };
-
-  const statusInfo = getStatusInfo(property.status);
-
   const locationText = 
     property.kecamatan && property.kabupaten
       ? `${property.kecamatan}, ${property.kabupaten}`
@@ -111,9 +54,11 @@ function PropertyCard({ property }: { property: UserProperty }) {
             </div>
           </div>
       
-          <div className={`self-start flex items-center gap-2 px-3 py-1.5 rounded-full border ${statusInfo.color} shrink-0 transition-transform group-hover:scale-105`}>
-            <div className={`w-2 h-2 rounded-full ${statusInfo.dotColor} animate-pulse`} />
-            <span className="text-xs font-semibold whitespace-nowrap">{statusInfo.text}</span>
+          <div className="self-start shrink-0 transition-transform group-hover:scale-105">
+            <StatusBadge 
+              status={property.status} 
+              kplt_approval={property.kplt_approval} 
+            />
           </div>
         </div>
 
@@ -158,14 +103,45 @@ export default async function DashboardPage() {
       fetchError = `Gagal memuat data properti: ${error.message}`;
     }
 
-    if (data) {
+    if (data && data.length > 0) {
+      
+      const ulokEksternalIds = data.map((p) => p.id);
+      const kpltMap: Record<string, string> = {};
+      
+      const { data: uloks } = await supabase
+        .from('ulok')
+        .select('id, ulok_eksternal_id')
+        .in('ulok_eksternal_id', ulokEksternalIds);
+      
+      if (uloks && uloks.length > 0) {
+          const ulokIds = uloks.map(u => u.id);
+          const { data: kplts } = await supabase
+            .from('kplt')
+            .select('ulok_id, kplt_approval')
+            .in('ulok_id', ulokIds);
+          
+          if (kplts) {
+              const ulokToKplt: Record<string, string> = {};
+              kplts.forEach(k => { 
+                if(k.kplt_approval) ulokToKplt[k.ulok_id] = k.kplt_approval; 
+              });
+              
+              uloks.forEach(u => {
+                  if (ulokToKplt[u.id]) {
+                    kpltMap[u.ulok_eksternal_id] = ulokToKplt[u.id];
+                  }
+              });
+          }
+      }
+
       userProperties = data.map((prop: DatabaseProperty) => ({
         id: prop.id,
         nama: prop.alamat,
         alamat: prop.alamat,
-        status: mapStatus(prop.status_ulok_eksternal),
+        status: prop.status_ulok_eksternal,
         kabupaten: prop.kabupaten,
-        kecamatan: prop.kecamatan, 
+        kecamatan: prop.kecamatan,
+        kplt_approval: kpltMap[prop.id] || null
       }));
     }
   } else {
