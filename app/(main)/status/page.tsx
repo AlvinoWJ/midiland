@@ -101,16 +101,20 @@ function DashboardContent() {
   const total = propertiesData.length;
 
   const rented = propertiesData.filter((p) => {
-      const kplt = p.kplt_approval?.toLowerCase() || '';
-      return ['approved', 'disetujui', 'ok'].includes(kplt);
+    const kplt = p.kplt_approval?.toLowerCase() || "";
+    return ["approved", "disetujui", "ok"].includes(kplt);
   }).length;
 
   const pending = propertiesData.filter((p) => {
-      const kplt = p.kplt_approval?.toLowerCase() || '';
-      const isApproved = ['approved', 'disetujui', 'ok'].includes(kplt);
-      const isRejected = p.status_ulok_eksternal === 'Rejected' || kplt.includes('reject') || kplt.includes('tolak') || kplt.includes('nok');
-      const isDraft = p.status_ulok_eksternal === 'Draft';
-      return !isApproved && !isRejected && !isDraft;
+    const kplt = p.kplt_approval?.toLowerCase() || "";
+    const isApproved = ["approved", "disetujui", "ok"].includes(kplt);
+    const isRejected =
+      p.status_ulok_eksternal === "Rejected" ||
+      kplt.includes("reject") ||
+      kplt.includes("tolak") ||
+      kplt.includes("nok");
+    const isDraft = p.status_ulok_eksternal === "Draft";
+    return !isApproved && !isRejected && !isDraft;
   }).length;
 
   const recentProperties = useMemo(
@@ -177,19 +181,19 @@ function DashboardContent() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
           <KPICard
-            title="Total Aset Terdaftar"
+            title="Total Property Terdaftar"
             value={total}
             Icon={List}
             color="text-indigo-600"
           />
           <KPICard
-            title="Pengajuan Aktif"
+            title="Total Pengajuan Dalam Proses"
             value={pending}
             Icon={Clock}
             color="text-amber-600"
           />
           <KPICard
-            title="Aset Aktif Disewa"
+            title="Total Property disetujui"
             value={rented}
             Icon={CheckCircle}
             color="text-green-600"
@@ -226,7 +230,10 @@ function DashboardContent() {
                     </div>
                   </div>
                   <div className="self-start mb-1 sm:mb-0 sm:ml-20 flex-shrink-0">
-                    <StatusBadge status={p.status_ulok_eksternal} kplt_approval={p.kplt_approval} />
+                    <StatusBadge
+                      status={p.status_ulok_eksternal}
+                      kplt_approval={p.kplt_approval}
+                    />
                   </div>
                 </div>
               );
