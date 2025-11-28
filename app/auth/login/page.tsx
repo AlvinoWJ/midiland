@@ -8,26 +8,26 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 const carouselSlides = [
   {
-    image: "/2.png",
-    alt: "Kemitraan Terpercaya",
+    image: "/2.svg",
+    alt: "Ilustrasi Kemitraan",
     title: "Kemitraan Terpercaya",
-    subtitle: "Bergabunglah dengan ribuan mitra sukses Alfamidi",
+    description: "Bergabunglah dengan ribuan mitra terpercaya kami.",
   },
   {
-    image: "/3.png",
-    alt: "Peluang Menguntungkan",
+    image: "/3.svg",
+    alt: "Ilustrasi Peluang",
     title: "Peluang Menguntungkan",
-    subtitle: "Raih kesuksesan bersama brand terpercaya",
+    description: "Raih peluang bisnis yang menguntungkan bersama kami.",
   },
   {
-    image: "/4.png",
-    alt: "Proses Mudah dan Cepat",
+    image: "/4.svg",
+    alt: "Ilustrasi Proses",
     title: "Proses Mudah dan Cepat",
-    subtitle: "Daftar sekarang dan mulai bisnis Anda",
+    description: "Proses pendaftaran yang sederhana dan cepat.",
   },
 ];
 
@@ -38,8 +38,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [progress, setProgress] = useState(0);
   const supabase = useRef(createClient()).current;
   const isRedirecting = useRef(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,47 +46,23 @@ export default function LoginPage() {
     setCurrentSlide((prev) =>
       prev === carouselSlides.length - 1 ? 0 : prev + 1
     );
-    setProgress(0);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) =>
-      prev === 0 ? carouselSlides.length - 1 : prev - 1
-    );
-    setProgress(0);
   };
 
   useEffect(() => {
-    if (isHovered) return;
-
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          return 0;
-        }
-        return prev + 2;
-      });
-    }, 100);
-
     const timer = setInterval(() => {
       nextSlide();
     }, 5000);
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(progressInterval);
-    };
-  }, [currentSlide, isHovered]);
+    return () => clearInterval(timer);
+  }, [currentSlide]);
 
   useEffect(() => {
     const safeRedirect = () => {
       if (isRedirecting.current) return;
       isRedirecting.current = true;
-
-      console.log("Sesi terdeteksi. Me-redirect ke /dashboard...");
       router.push("/dashboard");
       router.refresh();
     };
+
     const handleMessage = async (event: MessageEvent) => {
       if (
         event.origin !== window.location.origin ||
@@ -97,24 +71,11 @@ export default function LoginPage() {
         return;
       }
 
-      console.log(
-        "Pesan 'auth_success' diterima. Memeriksa sesi secara manual..."
-      );
-
       const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Gagal getSession:", error.message);
-        return;
-      }
+      if (error) return;
 
       if (data.session) {
-        console.log("Sesi terdeteksi dari getSession() manual.");
         safeRedirect();
-      } else {
-        console.log(
-          "getSession() tidak menemukan sesi. Menunggu onAuthStateChange..."
-        );
       }
     };
 
@@ -124,7 +85,6 @@ export default function LoginPage() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
-        console.log("Event SIGNED_IN terdeteksi dari onAuthStateChange.");
         safeRedirect();
       }
     });
@@ -193,8 +153,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      <div className="relative flex w-full lg:w-1/2 flex-col items-center md:justify-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto z-10">
+    <div className="flex h-screen w-full overflow-hidden font-sans">
+      <div className="relative flex w-full lg:w-1/2 flex-col items-center md:justify-center px-6 md:px-6 lg:px-10 bg-white overflow-y-auto">
         <div className="w-full max-w-lg space-y-4 pt-8 md:pt-0">
           <div className="flex justify-center mb-3 lg:hidden">
             <Image
@@ -208,7 +168,7 @@ export default function LoginPage() {
           </div>
 
           <div className="flex justify-center text-center lg:text-left mb-3">
-            <h1 className="text-xl font-bold text-gray-900">
+            <h1 className="text-lg lg:text-4xl font-bold text-gray-900">
               Masuk ke <span className="text-secondary">Midi</span>
               <span className="text-primary">Land</span>
             </h1>
@@ -336,161 +296,107 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div 
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gray-100"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        
-        <div className="absolute top-6 right-6 z-30 transition-transform duration-300 hover:scale-105">
-          <div className="border-2 border-white rounded-xl p-2 bg-white/95 shadow-lg backdrop-blur-sm">
-            <Image
-              src="/alfamidilogo.svg"
-              alt="Alfamidi Logo"
-              width={150}
-              height={40}
-              className="object-contain"
-              priority
-            />
-          </div>
-        </div>
-
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div
-            className="flex transition-transform duration-700 ease-in-out h-full"
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-          >
-            {carouselSlides.map((slide, index) => (
-              <div
-                key={index}
-                className="w-full h-full flex-shrink-0 relative"
-              >
-                <div className={`w-full h-full transition-transform duration-700 ${
-                  currentSlide === index ? 'scale-105' : 'scale-100'
-                }`}>
-                  <Image
-                    src={slide.image}
-                    alt={slide.alt}
-                    fill
-                    className="object-cover"
-                    priority={index === 0}
-                  />
-                </div>
-                
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/40 z-10" />
+          <Image
+            src="/login.svg"
+            alt="City Background"
+            fill
+            className="object-cover"
+            quality={100}
+            priority
+          />
+          <div className="absolute inset-0 backdrop-blur-2xl bg-white/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-secondary/30"></div>
+        </div>
 
-                <div className={`absolute top-0 left-0 w-full h-full flex flex-col justify-start items-center pt-32 px-12 z-20 transition-opacity duration-700 ${
-                  currentSlide === index ? 'opacity-100' : 'opacity-0'
-                }`}>
-                  <h2 className="text-4xl md:text-5xl font-bold text-white text-center drop-shadow-2xl leading-tight mb-4 animate-fade-in-up">
-                    {slide.title}
-                  </h2>
-                  <p className="text-lg md:text-xl text-white/90 text-center drop-shadow-lg max-w-md animate-fade-in-up animation-delay-200">
-                    {slide.subtitle}
-                  </p>
-                </div>
+        <div className="relative z-10 w-full h-full flex items-center justify-center p-14">
+          <div className="w-full h-full rounded-[2.5rem] shadow-2xl overflow-hidden backdrop-blur-xl bg-white/40 border border-white/60 relative flex flex-col">
+            <div className="absolute top-6 right-6 z-50">
+              <div className="border border-white/50 rounded-xl p-2 bg-white/80 shadow-sm backdrop-blur-sm">
+                <Image
+                  src="/alfamidilogo.svg"
+                  alt="Alfamidi Logo"
+                  width={120}
+                  height={35}
+                  className="object-contain"
+                  priority
+                />
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        <div className={`absolute inset-y-0 left-4 flex items-center z-20 transition-opacity duration-300 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
-        }`}>
-          <button
-            onClick={prevSlide}
-            className="p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 hover:scale-110 group"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
-          </button>
-        </div>
-        
-        <div className={`absolute inset-y-0 right-4 flex items-center z-20 transition-opacity duration-300 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
-        }`}>
-          <button
-            onClick={nextSlide}
-            className="p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 hover:scale-110 group"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
-          </button>
-        </div>
+            <div
+              className="flex transition-transform duration-700 ease-in-out h-full"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            >
+              {carouselSlides.map((slide, index) => (
+                <div
+                  key={index}
+                  className={`w-full flex-shrink-0 h-full flex flex-col items-center px-4 lg:px-8 transition-opacity duration-500 ${
+                    currentSlide === index ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <div className="flex flex-col items-center z-20 mb-4 mt-10 lg:mt-24 flex-none">
+                    <h2
+                      className={`text-2xl lg:text-3xl xl:text-4xl font-extrabold text-gray-800 tracking-tight relative transition-all duration-700 ${
+                        currentSlide === index
+                          ? "translate-y-0 opacity-100"
+                          : "-translate-y-8 opacity-0"
+                      }`}
+                    >
+                      {slide.title}
+                    </h2>
 
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-          <div className="flex space-x-3">
-            {carouselSlides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentSlide(index);
-                  setProgress(0);
-                }}
-                className="group relative"
-                aria-label={`Go to slide ${index + 1}`}
-              >
-                <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  currentSlide === index
-                    ? "bg-secondary scale-125 shadow-lg shadow-secondary/50"
-                    : "bg-white/60 hover:bg-white/90 hover:scale-110"
-                }`} />
-                
-                {currentSlide === index && (
-                  <div className="absolute -bottom-2 left-0 w-full h-0.5 bg-white/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-secondary transition-all duration-100 ease-linear"
-                      style={{ width: `${progress}%` }}
+                    <p
+                      className={`text-base lg:text-lg xl:text-xl text-gray-700 font-medium max-w-xl lg:max-w-2xl leading-relaxed mt-2 transition-all duration-700 delay-100 ${
+                        currentSlide === index
+                          ? "translate-y-0 opacity-100"
+                          : "translate-y-8 opacity-0"
+                      }`}
+                    >
+                      {slide.description}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`relative w-full flex-1 z-10 transition-all duration-700 ease-out 
+                    transform scale-110 lg:scale-110 xl:scale-[1.45] origin-bottom pb-10
+                    ${
+                      currentSlide === index
+                        ? "opacity-100 rotate-0"
+                        : "opacity-0 rotate-6"
+                    }`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30 rounded-full blur-[70px] animate-pulse opacity-50"></div>
+                    <Image
+                      src={slide.image}
+                      alt={slide.alt}
+                      fill
+                      className="object-contain object-bottom drop-shadow-2xl"
+                      priority={index === 0}
                     />
                   </div>
-                )}
-              </button>
-            ))}
+                </div>
+              ))}
+            </div>
+
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/40 z-30">
+              {carouselSlides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`transition-all duration-500 rounded-full ${
+                    currentSlide === index
+                      ? "w-8 h-2.5 bg-gradient-to-r from-primary to-secondary shadow-md"
+                      : "w-2.5 h-2.5 bg-gray-400/70 hover:bg-gray-600 hover:scale-110"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
-
-        <div className="absolute top-1/4 left-12 w-20 h-20 bg-secondary/10 rounded-full blur-2xl animate-pulse" />
-        <div className="absolute bottom-1/3 right-16 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse animation-delay-1000" />
       </div>
-
-      <style jsx>{`
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 0.6s ease-out forwards;
-        }
-
-        .animation-delay-200 {
-          animation-delay: 0.2s;
-          opacity: 0;
-        }
-
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 0.3;
-          }
-          50% {
-            opacity: 0.6;
-          }
-        }
-
-        .animate-pulse {
-          animation: pulse 3s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }
